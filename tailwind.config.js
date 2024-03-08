@@ -16,6 +16,10 @@ export default {
       zIndex: {
         "-1": "-1",
       },
+      colors: {
+        logo_navy: "#17316F",
+        logo_blue: "#2D60DC",
+      },
     },
   },
 };

@@ -1,3 +1,17 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .login-button {
+    @apply flex items-center justify-center px-10 py-5 space-x-10 text-center bg-white rounded-md shadow-inner neumorphism-shadow;
+  }
+}
+
+@layer utilities {
+  .neumorphism-shadow {
+    box-shadow:
+      0 0 6px -1px rgb(0 0 0 / 0.2),
+      0 2px 4px -2px rgb(0 0 0 / 0.2);
+  }
+}
