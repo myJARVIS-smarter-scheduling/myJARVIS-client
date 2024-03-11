@@ -9,6 +9,7 @@ const API = {
   CALENDAR: {
     GOOGLE: `${SERVER_URL}/calendar/google`,
     OUTLOOK: `${SERVER_URL}/calendar/outlook`,
+    EVENTS: `${SERVER_URL}/calendar/events`,
   },
   EVENTS: `${SERVER_URL}/event`,
 };
