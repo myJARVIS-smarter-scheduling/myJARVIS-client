@@ -16,9 +16,28 @@ export default {
       zIndex: {
         "-1": "-1",
       },
+      boxShadow: {
+        left: "-1px 0px 5px 1px rgba(0, 0, 0, 0.2)",
+        down: "0px 1px 3px 1px rgba(0, 0, 0, 0.2)",
+      },
       colors: {
         logo_navy: "#17316F",
         logo_blue: "#2D60DC",
+      },
+      animation: {
+        "scale-up": "scale-up 0.3s ease-in-out",
+      },
+      keyframes: {
+        "scale-up": {
+          "0%": {
+            transform: "scale(0)",
+            boxShadow: "0px 1px 3px 1px rgba(0, 0, 0, 0.2)",
+          },
+          "100%": {
+            transform: "scale(1)",
+            boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.2)",
+          },
+        },
       },
     },
   },
