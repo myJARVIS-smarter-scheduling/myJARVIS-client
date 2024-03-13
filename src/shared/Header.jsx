@@ -1,11 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import {
   HiOutlineMenu,
-  HiOutlineChevronLeft,
-  HiOutlineChevronRight,
   HiOutlineChevronDown,
   HiOutlineChevronUp,
 } from "react-icons/hi";
+
+import CalendarHeader from "../components/Calendar/CalendarHeader";
 
 function Header() {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +32,7 @@ function Header() {
   }, []);
 
   return (
-    <header className="flex items-center justify-between border-b px-15 py-7 space-x-100">
+    <header className="flex items-center justify-between w-full bg-white border-b px-15 py-7 space-x-100">
       <section className="flex items-center space-x-50">
         <div className="flex items-center space-x-15">
           <HiOutlineMenu size={30} />
@@ -45,31 +45,13 @@ function Header() {
             <p className="text-xl font-extrabold">myJARVIS</p>
           </div>
         </div>
-        <div className="flex items-center space-x-15">
-          <form className="flex items-center">
-            <button
-              type="button"
-              className="text-sm font-light border border-b-2 rounded min-w-70 min-h-30 text-slate-700"
-            >
-              TODAY
-            </button>
-          </form>
-          <div className="flex items-center space-x-10">
-            <HiOutlineChevronLeft size={20} className="text-slate-700" />
-            <HiOutlineChevronRight size={20} className="text-slate-700" />
-          </div>
-          <div className="space-x-10 text-xl font-light text-slate-700">
-            {/* TODO. 현재 월에 따라 변경되도록 로직을 변경해야합니다. */}
-            <span id="headerMonth">March</span>
-            <span id="headerYear">2024</span>
-          </div>
-        </div>
+        <CalendarHeader />
       </section>
       <section className="pr-30">
         <div className="relative inline-block text-left" ref={dropdownRef}>
           <button
             onClick={() => setIsOpen(!isOpen)}
-            className="inline-flex items-center justify-center px-5 text-sm font-normal text-gray-700 bg-white border border-gray-300 rounded-md shadow-sm min-w-100 min-h-30 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+            className="inline-flex items-center justify-center px-5 text-sm font-normal text-gray-700 border border-gray-300 rounded-md shadow-sm min-w-100 min-h-30 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
           >
             {selectedOption}
             {isOpen ? (
