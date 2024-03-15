@@ -1,20 +1,69 @@
+import { useState, useRef, useEffect } from "react";
+
 import useCurrentMonthStore from "../../store/dates";
 import { useAccountEventStore } from "../../store/account";
+
+import SchedulePreview from "../Schedule/SchedulePreview";
 
 import {
   CALENDAR_DAYS,
   MINI_CALENDAR_DAYS,
-  CALENDAR_COLORS,
+  CALENDAR_BORDER_COLORS,
+  CALENDAR_COLORS_STRONG,
   CALENDAR_COLORS_LIGHT,
 } from "../../constant/calendar";
 
 function CalendarBody({ isMiniCalendar = false }) {
+  const [selectedEvent, setSelectedEvent] = useState(null);
+  const schedulePreviewRef = useRef();
+
   const { accounts } = useAccountEventStore();
   const { currentMonth } = useCurrentMonthStore();
 
   const CALENDAR_DAYS_LABEL = isMiniCalendar
     ? MINI_CALENDAR_DAYS
     : CALENDAR_DAYS;
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        schedulePreviewRef.current &&
+        !schedulePreviewRef.current.contains(event.target)
+      ) {
+        setSelectedEvent(null);
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  function isSameDay(eventDate, comparedDate) {
+    return (
+      eventDate.getFullYear() === comparedDate.getFullYear() &&
+      eventDate.getMonth() === comparedDate.getMonth() &&
+      eventDate.getDate() === comparedDate.getDate()
+    );
+  }
+
+  function handleEventClick(event) {
+    setSelectedEvent(event);
+  }
+
+  function handleEventClose(event) {
+    event.stopPropagation();
+
+    setSelectedEvent(null);
+  }
+
+  const handleKeyDown = (event, callback) => {
+    if (event.key === "Enter" || event.key === " ") {
+      callback();
+    }
+  };
 
   function getCalendarDates(thisMonth) {
     const dateList = [];
@@ -84,7 +133,7 @@ function CalendarBody({ isMiniCalendar = false }) {
       <div className="flex">
         {CALENDAR_DAYS_LABEL.map((day, index) => (
           <div
-            key={CALENDAR_DAYS_LABEL[index]}
+            key={`${day}`}
             style={{ width: "14.2857%" }}
             className="flex-grow p-2 overflow-hidden text-center border-b-1 text-15 max-w-250:text-20"
           >
@@ -95,42 +144,128 @@ function CalendarBody({ isMiniCalendar = false }) {
     );
   }
 
-  function isSameDay(eventDate, comparedDate) {
-    return (
-      eventDate.getFullYear() === comparedDate.getFullYear() &&
-      eventDate.getMonth() === comparedDate.getMonth() &&
-      eventDate.getDate() === comparedDate.getDate()
-    );
-  }
-
   function renderEventsForDate(date, accountList) {
-    return accountList.map((account, idx) => {
-      const accountColor = CALENDAR_COLORS[idx];
-      const accountColorLight = CALENDAR_COLORS_LIGHT[idx];
+    const allEvents = accountList.flatMap((account, accountIndex) =>
+      account.events.map((event) => ({
+        ...event,
+        accountIndex,
+        startAt: new Date(event.startAt),
+        endAt: new Date(event.endAt),
+      })),
+    );
 
-      return account.events
-        .map((event) => {
-          const eventStartDate = new Date(event.startAt);
+    const sortedEvents = allEvents.sort((a, b) => {
+      const dateOfA = new Date(a.startAt);
+      const dateOfB = new Date(b.startAt);
 
-          if (isSameDay(eventStartDate, date)) {
-            return (
-              <div
-                key={event._id}
-                className={`flex items-center h-20 justify-start ${accountColorLight} mt-5`}
-              >
-                <div
-                  className={`w-full h-20 border-l-4 ${accountColor} px-5 overflow-hidden text-clip shirink`}
-                >
-                  <p className="h-20 text-left text-slate-900">{event.title}</p>
-                </div>
-              </div>
-            );
-          }
+      const dateStringA = `${dateOfA.getFullYear()}/${dateOfA.getMonth() + 1}/${dateOfA.getDate()}`;
+      const dateStringB = `${dateOfB.getFullYear()}/${dateOfB.getMonth() + 1}/${dateOfB.getDate()}`;
 
-          return null;
-        })
-        .filter(Boolean);
+      if (dateStringA < dateStringB) return -1;
+      if (dateStringA > dateStringB) return 1;
+
+      return a.accountIndex - b.accountIndex;
     });
+
+    const isEventOverlapping = (event, dayStart, dayEnd) => {
+      return event.startAt <= dayEnd && event.endAt >= dayStart;
+    };
+
+    const startOfDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+    );
+    const endOfDay = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      23,
+      59,
+      59,
+      999,
+    );
+
+    const previousDateStart = new Date(startOfDay);
+    previousDateStart.setDate(startOfDay.getDate() - 1);
+    const previousDateEnd = new Date(endOfDay);
+    previousDateEnd.setDate(endOfDay.getDate() - 1);
+
+    const previousDayEventCount = allEvents.filter((event) =>
+      isEventOverlapping(event, previousDateStart, previousDateEnd),
+    ).length;
+
+    const currentDayEventCount = allEvents.filter((event) =>
+      isEventOverlapping(event, startOfDay, endOfDay),
+    ).length;
+
+    const diffCount = Math.max(0, previousDayEventCount - currentDayEventCount);
+    const renderedSections = [];
+
+    for (let i = 0; i < diffCount; i += 1) {
+      renderedSections.push(
+        <section
+          key={`empty-${i}`}
+          className="flex items-center justify-start h-20 mt-5"
+        ></section>,
+      );
+    }
+
+    sortedEvents
+      .map((event) => {
+        const eventStartDate = new Date(event.startAt);
+        const eventEndDate = new Date(event.endAt);
+        const duration = eventStartDate.getDate() - eventEndDate.getDate();
+        const isContinuousEvent =
+          date >= eventStartDate && date <= eventEndDate;
+        const isSameDayWithEvent = isSameDay(eventStartDate, date);
+        const isSelectedEvent =
+          selectedEvent && selectedEvent._id === event._id;
+
+        const accountBorderColor = CALENDAR_BORDER_COLORS[event.accountIndex];
+        const accountColorLight = CALENDAR_COLORS_LIGHT[event.accountIndex];
+        const accountColorStrong = CALENDAR_COLORS_STRONG[event.accountIndex];
+
+        if (isContinuousEvent || (!isContinuousEvent && isSameDayWithEvent)) {
+          renderedSections.push(
+            <section key={event._id}>
+              <div
+                onClick={() => handleEventClick(event)}
+                onKeyDown={(ev) =>
+                  handleKeyDown(ev, () => handleEventClick(event))
+                }
+                role="button"
+                tabIndex="0"
+                className={`flex items-center h-20 justify-start cursor-pointer ${duration && accountColorLight} mt-5`}
+              >
+                {isSameDayWithEvent && (
+                  <div
+                    className={`relative w-full h-20 border-l-4 ${accountBorderColor} px-5 overflow-hidden text-clip shrink cursor-pointer`}
+                  >
+                    <p className="w-full h-20 text-left text-slate-900">
+                      {event.title}
+                    </p>
+                  </div>
+                )}
+              </div>
+              {isSelectedEvent && isSameDayWithEvent && (
+                <div ref={schedulePreviewRef} className="absolute z-20">
+                  <SchedulePreview
+                    accountColor={accountColorStrong}
+                    eventInfo={selectedEvent}
+                    handleCloseButtonClick={handleEventClose}
+                  />
+                </div>
+              )}
+            </section>,
+          );
+        }
+
+        return null;
+      })
+      .filter(Boolean);
+
+    return renderedSections;
   }
 
   function renderWeek(week) {
@@ -138,21 +273,24 @@ function CalendarBody({ isMiniCalendar = false }) {
       <div className="flex flex-1">
         {week.map((date) => {
           const dateKey = date.toISOString();
+          const isToday = date.toDateString() === new Date().toDateString();
           const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
           const textColorOfCurrentMonth = isCurrentMonth
-            ? "text-slate-700"
+            ? "text-slate-800"
             : "text-gray-400";
 
           return (
             <div
               key={dateKey}
-              className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden text-13 min-w-250:text-20 `}
+              className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden py-3 text-13 min-w-250:text-20 w-full flex flex-col justify-start items-center`}
               style={{ width: "14.2857%" }} // 100% / 7
             >
-              <div className={`text-center ${textColorOfCurrentMonth}`}>
+              <div
+                className={`w-20 h-20 text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 rounded-full text-white"}`}
+              >
                 {date.getDate()}
               </div>
-              <div className="px-3">
+              <div className="w-full">
                 {!isMiniCalendar && renderEventsForDate(date, accounts)}
               </div>
             </div>
@@ -172,8 +310,9 @@ function CalendarBody({ isMiniCalendar = false }) {
         const firstDay = week[0].toISOString().slice(0, 10);
         const lastDay = week[week.length - 1].toISOString().slice(0, 10);
         const weekKey = `week-${firstDay}-to-${lastDay}`;
+
         return (
-          <div key={weekKey} className="flex flex-1 divide-x">
+          <div key={weekKey} className="relative flex flex-1 divide-x">
             {renderWeek(week)}
           </div>
         );
