@@ -1,9 +1,10 @@
 import { MdChevronLeft, MdOutlineChevronRight } from "react-icons/md";
 
 import useCurrentMonthStore from "../../store/dates";
-import { CALENDAR_MONTHS } from "../../constant/calendar";
+import DropdownMenu from "../../shared/DropdownMenu";
+import { CALENDAR_MONTHS, CALENDAR_VIEW } from "../../constant/calendar";
 
-function CalendarHeader() {
+function CalendarHeader({ isDatePicker = false }) {
   const { currentMonth, setCurrentMonth } = useCurrentMonthStore();
 
   const currentMonthName = CALENDAR_MONTHS[currentMonth.getMonth()];
@@ -32,28 +33,33 @@ function CalendarHeader() {
   }
 
   return (
-    <header className="flex items-center space-x-30">
-      <button
-        type="button"
-        onClick={setToday}
-        className="text-sm font-light border border-b-2 rounded min-w-70 min-h-30 text-slate-700"
-      >
-        TODAY
-      </button>
-      <nav className="flex items-center justify-between w-80">
-        <button onClick={setPreviousMonth}>
-          <MdChevronLeft size={30} aria-label="Go to previous month" />
-        </button>
-        <button onClick={setNextMonth}>
-          <MdOutlineChevronRight size={30} aria-label="Go to next month" />
-        </button>
-      </nav>
-      <section>
-        <p className="space-x-10 text-xl font-light">
-          <span>{currentMonthName}</span>
-          <span>{currentYear}</span>
-        </p>
+    <header className="flex items-center justify-between w-full">
+      <section className="flex items-center w-full space-x-30">
+        {!isDatePicker && (
+          <button
+            type="button"
+            onClick={setToday}
+            className="text-sm font-light border border-b-2 rounded min-w-70 min-h-30 text-slate-700"
+          >
+            TODAY
+          </button>
+        )}
+        <nav className="flex items-center justify-between w-80">
+          <button onClick={setPreviousMonth}>
+            <MdChevronLeft size={30} aria-label="Go to previous month" />
+          </button>
+          <button onClick={setNextMonth}>
+            <MdOutlineChevronRight size={30} aria-label="Go to next month" />
+          </button>
+        </nav>
+        <section>
+          <p className="space-x-10 text-xl font-light sm:text-lg">
+            <span>{currentMonthName}</span>
+            <span>{currentYear}</span>
+          </p>
+        </section>
       </section>
+      {/* <DropdownMenu options={CALENDAR_VIEW} /> */}
     </header>
   );
 }

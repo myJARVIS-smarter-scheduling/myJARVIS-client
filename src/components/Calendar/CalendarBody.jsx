@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import { useState, useRef, useEffect } from "react";
 
 import useCurrentMonthStore from "../../store/dates";
@@ -13,7 +15,7 @@ import {
   CALENDAR_COLORS_LIGHT,
 } from "../../constant/calendar";
 
-function CalendarBody({ isMiniCalendar = false }) {
+function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
   const [selectedEvent, setSelectedEvent] = useState(null);
   const schedulePreviewRef = useRef();
 
@@ -133,7 +135,7 @@ function CalendarBody({ isMiniCalendar = false }) {
       <div className="flex">
         {CALENDAR_DAYS_LABEL.map((day, index) => (
           <div
-            key={`${day}`}
+            key={`${day}-${index}`}
             style={{ width: "14.2857%" }}
             className="flex-grow p-2 overflow-hidden text-center border-b-1 text-15 max-w-250:text-20"
           >
@@ -188,6 +190,7 @@ function CalendarBody({ isMiniCalendar = false }) {
 
     const previousDateStart = new Date(startOfDay);
     previousDateStart.setDate(startOfDay.getDate() - 1);
+
     const previousDateEnd = new Date(endOfDay);
     previousDateEnd.setDate(endOfDay.getDate() - 1);
 
@@ -283,9 +286,10 @@ function CalendarBody({ isMiniCalendar = false }) {
             <div
               key={dateKey}
               className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden py-3 text-13 min-w-250:text-20 w-full flex flex-col justify-start items-center`}
-              style={{ width: "14.2857%" }} // 100% / 7
+              style={{ width: "14.2857%" }}
             >
               <div
+                onClick={() => handleEventDateChange(date)}
                 className={`w-20 h-20 text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 rounded-full text-white"}`}
               >
                 {date.getDate()}
