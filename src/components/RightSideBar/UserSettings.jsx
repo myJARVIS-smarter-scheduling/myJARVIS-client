@@ -15,13 +15,17 @@ function UserSettings() {
         <p className="flex mb-10 font-light text-center text-20">
           Calendar View
         </p>
-        <DropdownMenu options={viewOptions} />
+        <div className="w-150">
+          <DropdownMenu options={viewOptions} />
+        </div>
       </nav>
       <nav className="w-full h-150">
         <p className="flex mb-10 font-light text-center text-20">
           Select Timezone
         </p>
-        <DropdownMenu options={timezone} className="text-10" />
+        <div className="w-250">
+          <DropdownMenu options={timezone} />
+        </div>
       </nav>
     </main>
   );

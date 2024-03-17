@@ -22,7 +22,7 @@ function LeftSideBar() {
             Weekly Schedule Conflicts
           </p>
           <hr />
-          <div className="overflow-y-scroll min-h-300"></div>
+          <div className="overflow-y-auto min-h-300"></div>
         </div>
       </section>
     </aside>
