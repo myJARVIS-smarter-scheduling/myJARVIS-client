@@ -11,7 +11,7 @@ const API = {
     OUTLOOK: `${SERVER_URL}/calendar/outlook`,
     EVENTS: `${SERVER_URL}/calendar/events`,
   },
-  EVENTS: `${SERVER_URL}/event`,
+  EVENTS: `${SERVER_URL}/events`,
 };
 
 export default API;
