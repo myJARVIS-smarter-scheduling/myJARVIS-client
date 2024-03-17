@@ -1,15 +1,21 @@
 import { useState, useEffect, useRef } from "react";
 import { HiOutlineChevronUp, HiOutlineChevronDown } from "react-icons/hi";
 
-function DropdownMenu({ options }) {
+function DropdownMenu({ options = [], placeholder, handleTimezoneClick }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(options[0].label);
+  const [selectedOption, setSelectedOption] = useState(
+    placeholder || (options.length ? options[0].label : ""),
+  );
 
   const dropdownRef = useRef();
 
   const handleSelect = (label) => {
     setSelectedOption(label);
     setIsOpen(false);
+
+    if (handleTimezoneClick) {
+      handleTimezoneClick(label);
+    }
   };
 
   useEffect(() => {
@@ -27,11 +33,14 @@ function DropdownMenu({ options }) {
   }, []);
 
   return (
-    <div className="pr-30">
-      <div className="relative inline-block text-left" ref={dropdownRef}>
+    <div className="flex items-center justify-start w-full h-full pr-30">
+      <div
+        className="relative inline-block w-full h-full text-left"
+        ref={dropdownRef}
+      >
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="inline-flex items-center justify-center w-full px-5 text-sm font-normal text-left text-gray-700 border border-gray-300 rounded-md shadow-sm min-w-100 min-h-30 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
+          className="inline-flex items-center justify-center h-full px-5 py-10 overflow-hidden font-normal text-left text-gray-700 border border-gray-300 rounded-md shadow-sm whitespace-nowrap text-1em md:px-10 min-h-30 min-w-100 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-100 focus:ring-indigo-500"
         >
           {selectedOption}
           {isOpen ? (
@@ -41,13 +50,13 @@ function DropdownMenu({ options }) {
           )}
         </button>
         {isOpen && (
-          <div className="absolute right-0 z-10 w-full mt-5 text-sm font-thin origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="overflow-auto max-h-300">
+          <div className="absolute right-0 z-10 w-full mt-5 font-thin origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+            <div className="w-full overflow-auto max-h-300">
               {options.map((option) => (
                 <button
                   key={option.value}
                   type="button"
-                  className="block w-full py-6 text-sm text-left text-gray-700 px-15 hover:bg-gray-100"
+                  className="block w-full py-6 overflow-hidden text-left text-gray-700 px-15 hover:bg-gray-100"
                   onClick={() => handleSelect(option.label)}
                 >
                   {option.label}
