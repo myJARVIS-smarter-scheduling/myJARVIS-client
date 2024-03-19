@@ -7,7 +7,6 @@ import {
 function Logo() {
   return (
     <div className="flex items-center min-w-200 space-x-15">
-      <HiOutlineMenu size={30} />
       <div className="flex items-center">
         <img
           src="/assets/myJARVIS_logo_square.png"
