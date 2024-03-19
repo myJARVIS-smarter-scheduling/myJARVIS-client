@@ -1,6 +1,6 @@
 /* eslint-disable */
-
 import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import useCurrentMonthStore from "../../store/dates";
 import { useAccountEventStore } from "../../store/account";
@@ -16,10 +16,10 @@ import {
 } from "../../constant/calendar";
 
 function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
+  const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const schedulePreviewRef = useRef();
-
-  const { accounts } = useAccountEventStore();
+  const { accounts, conflictEvents } = useAccountEventStore();
   const { currentMonth } = useCurrentMonthStore();
 
   const CALENDAR_DAYS_LABEL = isMiniCalendar
@@ -49,6 +49,30 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
       eventDate.getMonth() === comparedDate.getMonth() &&
       eventDate.getDate() === comparedDate.getDate()
     );
+  }
+
+  function getConflictEventsDate(conflictEvents) {
+    const conflictDates = new Set();
+
+    conflictEvents.forEach(({ events }) => {
+      const startDates = events.map((event) => new Date(event.startAt));
+      const endDates = events.map((event) => new Date(event.endAt));
+
+      const latestStartDate = new Date(Math.max(...startDates));
+      const earliestEndDate = new Date(Math.min(...endDates));
+
+      if (latestStartDate <= earliestEndDate) {
+        for (
+          let date = latestStartDate;
+          date <= earliestEndDate;
+          date.setDate(date.getDate() + 1)
+        ) {
+          conflictDates.add(date.toDateString());
+        }
+      }
+    });
+
+    return conflictDates;
   }
 
   function handleEventClick(event) {
@@ -188,6 +212,8 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
       999,
     );
 
+    const renderedSections = [];
+
     const previousDateStart = new Date(startOfDay);
     previousDateStart.setDate(startOfDay.getDate() - 1);
 
@@ -203,7 +229,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     ).length;
 
     const diffCount = Math.max(0, previousDayEventCount - currentDayEventCount);
-    const renderedSections = [];
 
     for (let i = 0; i < diffCount; i += 1) {
       renderedSections.push(
@@ -218,7 +243,15 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
       .map((event) => {
         const eventStartDate = new Date(event.startAt);
         const eventEndDate = new Date(event.endAt);
-        const duration = eventStartDate.getDate() - eventEndDate.getDate();
+
+        const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+        const durationInMilliseconds = eventEndDate - eventStartDate;
+        const isDurationMoreThanADay =
+          durationInMilliseconds > oneDayInMilliseconds;
+        const isDurationToday =
+          durationInMilliseconds === oneDayInMilliseconds &&
+          isSameDay(eventStartDate, date);
+
         const isContinuousEvent =
           date >= eventStartDate && date <= eventEndDate;
         const isSameDayWithEvent = isSameDay(eventStartDate, date);
@@ -239,7 +272,7 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
                 }
                 role="button"
                 tabIndex="0"
-                className={`flex items-center h-20 justify-start cursor-pointer ${duration && accountColorLight} mt-5`}
+                className={`flex items-center h-20 justify-start cursor-pointer ${(isDurationMoreThanADay || isDurationToday) && accountColorLight} mt-5`}
               >
                 {isSameDayWithEvent && (
                   <div
@@ -271,26 +304,36 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     return renderedSections;
   }
 
+  function handleNewEventDoubleClick(dateOfEvent) {
+    navigate("/events/new", { state: { dateOfEvent } });
+  }
+
   function renderWeek(week) {
+    const overlappingDates = getConflictEventsDate(conflictEvents);
+
     return (
       <div className="flex flex-1">
         {week.map((date) => {
           const dateKey = date.toISOString();
           const isToday = date.toDateString() === new Date().toDateString();
           const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
+          const isConflictDate = overlappingDates.has(date.toDateString());
           const textColorOfCurrentMonth = isCurrentMonth
             ? "text-slate-800"
             : "text-gray-400";
 
           return (
             <div
+              //TODO. onClick 이벤트에는 팝업을 통해 간단하게 만들 수 있는 기능을 구현합니다.
+              // onClick={() => handleEventDateChange(date)}
               key={dateKey}
+              onDoubleClick={() => handleNewEventDoubleClick(date)}
               className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden py-3 text-13 min-w-250:text-20 w-full flex flex-col justify-start items-center`}
               style={{ width: "14.2857%" }}
             >
               <div
+                className={`w-20 h-20 relative rounded-full text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 text-white"} ${isConflictDate && isMiniCalendar && "text-white border bg-[rgba(255,18,18,0.9)]"}`}
                 onClick={() => handleEventDateChange(date)}
-                className={`w-20 h-20 text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 rounded-full text-white"}`}
               >
                 {date.getDate()}
               </div>
