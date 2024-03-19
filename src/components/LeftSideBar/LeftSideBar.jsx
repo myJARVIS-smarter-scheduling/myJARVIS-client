@@ -2,6 +2,7 @@ import { AiOutlinePlus } from "react-icons/ai";
 import { MdOutlineArrowDropDown } from "react-icons/md";
 
 import CalendarBody from "../Calendar/CalendarBody";
+import ConflictList from "./ConflictList";
 
 function LeftSideBar() {
   return (
@@ -22,7 +23,9 @@ function LeftSideBar() {
             Weekly Schedule Conflicts
           </p>
           <hr />
-          <div className="overflow-y-auto min-h-300"></div>
+          <div className="w-full overflow-y-auto" style={{ maxHeight: "50vh" }}>
+            <ConflictList />
+          </div>
         </div>
       </section>
     </aside>

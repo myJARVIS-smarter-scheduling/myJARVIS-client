@@ -4,15 +4,19 @@ import { IoSettingsSharp } from "react-icons/io5";
 import useNavbarStore from "../../store/navbar";
 
 function RightSideBar() {
-  const { isSidebarOpen, setIsSidebarOpen, navbarItem, setNavbarItems } =
-    useNavbarStore();
+  const {
+    isRightSidebarOpen,
+    setisRightSidebarOpen,
+    navbarItem,
+    setNavbarItems,
+  } = useNavbarStore();
 
   function handleIconClick(itemType) {
     if (navbarItem === itemType) {
-      setIsSidebarOpen(false);
+      setisRightSidebarOpen(false);
       setNavbarItems("");
     } else {
-      setIsSidebarOpen(true);
+      setisRightSidebarOpen(true);
       setNavbarItems(itemType);
     }
   }
@@ -23,7 +27,7 @@ function RightSideBar() {
     <aside className="h-full py-20 bg-white border-l space-y-25 max-w-65 w-65 min-w-65">
       <nav className="relative flex items-center justify-center">
         <div
-          className={`flex items-center justify-center w-45 h-45 ${navbarItem === "profile" && isSidebarOpen && selectedBackground} hover:bg-slate-200 hover:rounded-full`}
+          className={`flex items-center justify-center w-45 h-45 ${navbarItem === "profile" && isRightSidebarOpen && selectedBackground} hover:bg-slate-200 hover:rounded-full`}
         >
           <FaUserCircle
             size={30}
@@ -37,7 +41,7 @@ function RightSideBar() {
       </nav>
       <nav className="relative flex items-center justify-center">
         <div
-          className={`flex items-center justify-center w-45 h-45 ${navbarItem === "settings" && isSidebarOpen && selectedBackground} hover:bg-slate-200 hover:rounded-full`}
+          className={`flex items-center justify-center w-45 h-45 ${navbarItem === "settings" && isRightSidebarOpen && selectedBackground} hover:bg-slate-200 hover:rounded-full`}
         >
           <IoSettingsSharp
             size={30}

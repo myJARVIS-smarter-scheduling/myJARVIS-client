@@ -6,10 +6,11 @@ import UserSettings from "./UserSettings";
 import useNavbarStore from "../../store/navbar";
 
 function RightSideBarItems() {
-  const { setIsSidebarOpen, navbarItem, setNavbarItems } = useNavbarStore();
+  const { setisRightSidebarOpen, navbarItem, setNavbarItems } =
+    useNavbarStore();
 
   function handleCloseButtonClick() {
-    setIsSidebarOpen(false);
+    setisRightSidebarOpen(false);
     setNavbarItems(null);
   }
 
