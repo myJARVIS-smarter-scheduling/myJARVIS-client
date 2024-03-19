@@ -1,24 +1,22 @@
 import React, { useState, useRef, useEffect } from "react";
 
-import TIME_OPTIONS from "../constant/schedule";
-
 function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedOption, setselectedOption] = useState(
-    placeholder || (options.length ? options[0].label : ""),
+    placeholder || (options.length ? options[0].value : ""),
   );
   const [filter, setFilter] = useState("");
-  const ref = useRef(null);
+  const optionRef = useRef(null);
 
   const filteredOption = filter
     ? options.filter((option) =>
-        option.label.toLowerCase().includes(filter.toLowerCase()),
+        option.value.toLowerCase().includes(filter.toLowerCase()),
       )
     : options;
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (optionRef.current && !optionRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
@@ -29,13 +27,13 @@ function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
   }, []);
 
   const selectOption = (option) => {
-    setselectedOption(option.label);
-    handleOptionChange(option.label);
+    setselectedOption(option.value);
+    handleOptionChange(option.value);
     setIsOpen(false);
     setFilter("");
   };
   return (
-    <div className="relative inline-block w-full text-left" ref={ref}>
+    <div className="relative inline-block w-full text-left" ref={optionRef}>
       <div className="flex flex-col items-center w-full shadow-sm">
         <input
           type="text"

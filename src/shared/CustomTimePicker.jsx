@@ -6,7 +6,7 @@ function TimePicker({ initialTime, handleTimeClick }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState(initialTime);
   const [filter, setFilter] = useState("");
-  const ref = useRef(null);
+  const timeRef = useRef(null);
 
   const filteredTimes = filter
     ? TIME_OPTIONS.filter((time) => time.includes(filter))
@@ -14,7 +14,7 @@ function TimePicker({ initialTime, handleTimeClick }) {
 
   useEffect(() => {
     function handleClickOutside(event) {
-      if (ref.current && !ref.current.contains(event.target)) {
+      if (timeRef.current && !timeRef.current.contains(event.target)) {
         setIsOpen(false);
       }
     }
@@ -32,7 +32,7 @@ function TimePicker({ initialTime, handleTimeClick }) {
   };
 
   return (
-    <div className="relative inline-block text-left" ref={ref}>
+    <div className="relative inline-block text-left" ref={timeRef}>
       <div className="flex flex-col items-center shadow-sm">
         <input
           type="text"
@@ -52,7 +52,7 @@ function TimePicker({ initialTime, handleTimeClick }) {
                 <li
                   key={time}
                   aria-hidden="true"
-                  className="px-10 py-6 cursor-pointer text-15 hover:bg-gray-100"
+                  className="px-10 py-6 text-sm cursor-pointer hover:bg-gray-100"
                   onClick={() => {
                     selectTime(time);
                     setIsOpen(false);
