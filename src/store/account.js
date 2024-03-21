@@ -3,17 +3,31 @@ import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
 const loginProviderStore = (set) => ({
   provider: "",
-  setProvider: (provider) => set({ provider }),
+  user: {},
+  accountInfo: [],
 
-  user: "",
+  setProvider: (provider) => set({ provider }),
   setUser: (user) => set({ user }),
+  setAccountInfo: (accountInfo) => set({ accountInfo }),
+});
+
+const biWeeklyEventListStore = (set) => ({
+  biWeeklyEvents: [],
+
+  addBiWeeklyEvents: (newEvents) =>
+    set((state) => ({ biWeeklyEvents: newEvents })),
+  clearBiWeeklyEvents: () =>
+    set(() => ({
+      biWeeklyEvents: [],
+    })),
 });
 
 const accountEventListStore = (set) => ({
   accounts: [],
+  conflictEvents: [],
   connectAccount: (accountEventList) =>
     set((state) => ({
-      accounts: [...state.accounts, ...accountEventList],
+      accounts: accountEventList,
     })),
   addEvent: (accountIds, newEvent) => {
     set((state) => ({
@@ -43,13 +57,19 @@ const accountEventListStore = (set) => ({
           ? {
               ...account,
               events: account.events.map((event) =>
-                event._id === updatedEvent.id ? updatedEvent : event,
+                event._id === updatedEvent._id ? updatedEvent : event,
               ),
             }
           : account,
       ),
     }));
   },
+  addConflict: (newConfilct) =>
+    set((state) => ({ conflictEvents: newConfilct })),
+  clearConflicts: () =>
+    set(() => ({
+      conflictEvents: [],
+    })),
 });
 
 const useLoginProviderStore = create(
@@ -61,6 +81,19 @@ const useLoginProviderStore = create(
   ),
 );
 
+const useBiWeeklyEventListStore = create(
+  devtools(
+    persist(biWeeklyEventListStore, {
+      name: "biWeeklyEventsKey",
+      storage: createJSONStorage(() => sessionStorage),
+    }),
+  ),
+);
+
 const useAccountEventStore = create(devtools(accountEventListStore));
 
-export { useLoginProviderStore, useAccountEventStore };
+export {
+  useLoginProviderStore,
+  useAccountEventStore,
+  useBiWeeklyEventListStore,
+};
