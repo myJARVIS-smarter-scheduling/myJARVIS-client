@@ -24,21 +24,29 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
 
   const { title } = eventInfo;
   const eventStartDate = new Date(eventInfo.startAt);
+  const eventEndDate = new Date(eventInfo.endAt);
   const eventMonth = eventStartDate.getMonth();
   const eventDate = eventStartDate.getDate();
   const eventDay = CALENDAR_DAYS[eventStartDate.getDay()];
   const eventMonthLabel = CALENDAR_MONTHS[eventMonth];
-  const eventStartHour = eventStartDate.getHours();
-  const eventStartMinute = eventStartDate
-    .getMinutes()
-    .toString()
-    .padStart(2, "0");
-  const eventEndDate = new Date(eventInfo.endAt);
-  const eventEndHour = eventEndDate.getHours();
-  const eventEndMinute = eventEndDate.getMinutes().toString().padStart(2, "0");
   const location = eventInfo.place;
   const attendeesCount = eventInfo.attendees.length;
   const { attendees } = eventInfo;
+
+  console.log(eventInfo, "eventInfo");
+
+  const formattedStartDate = eventStartDate.toLocaleString("en-US", {
+    month: "short",
+    day: "numeric",
+  });
+  const formattedStartTime = eventStartDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+  const formattedEndTime = eventEndDate.toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   function handleEditButtonClick(event) {
     navigate(`/events/${event.eventId}/editing`, {
@@ -113,24 +121,27 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
             <p className="font-light text-25">{title}</p>
           </div>
           <div className="flex space-x-10 text-sm font-light pl-45 text-slate-800 ">
-            <p>
+            <p className="space-y-5">
               <span>{eventDay}</span>
               <span>&#44;</span>
-              <span>{eventMonthLabel}</span>
-              <span>{eventDate}</span>
+              {/* <span>{eventMonthLabel}</span> */}
+              <span>{formattedStartDate}</span>
+              {/* <span>{eventDate}</span> */}
             </p>
             <span>&#183;</span>
             <p className="flex items-center space-x-5">
               <p>
-                <span>{eventStartHour}</span>
+                {/* <span>{eventStartHour}</span>
                 <span>&#58;</span>
-                <span>{eventStartMinute}</span>
+                <span>{eventStartMinute}</span> */}
+                <span>{formattedStartTime}</span>
               </p>
               <span>&#45;</span>
               <p>
-                <span>{eventEndHour}</span>
+                {/* <span>{eventEndHour}</span>
                 <span>&#58;</span>
-                <span>{eventEndMinute}</span>
+                <span>{eventEndMinute}</span> */}
+                <span>{formattedEndTime}</span>
               </p>
             </p>
           </div>

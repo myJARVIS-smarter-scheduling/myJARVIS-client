@@ -1,6 +1,6 @@
 /* eslint-disable no-nested-ternary */
-import { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 
 import { FaRegCalendarCheck } from "react-icons/fa";
@@ -12,14 +12,14 @@ import {
   useBiWeeklyEventListStore,
 } from "../../store/account";
 import useNavbarStore from "../../store/navbar";
-import DropDownTextMenu from "../../shared/DropdownTextMenu";
-import getTimezoneFormat from "../../utils/getTimezoneFormat";
+import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
 
 import Header from "../../shared/Header";
 import DropdownMenu from "../../shared/DropdownMenu";
 import TimePicker from "../../shared/CustomTimePicker";
 import TextEditor from "../../shared/TextEditor";
 import CustomDatePicker from "../../shared/CustomDatePicker";
+import DropDownTextMenu from "../../shared/DropdownTextMenu";
 import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
 import ConflictAlert from "../LeftSideBar/ConfilctAlert";
@@ -35,83 +35,105 @@ const headerOptions = [
 ];
 
 function ScheduleDetails({ isNewEvent = false }) {
-  const location = useLocation();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user, provider, accountInfo } = useLoginProviderStore();
   const { biWeeklyEvents } = useBiWeeklyEventListStore();
   const { isRightSidebarOpen } = useNavbarStore();
-
-  const eventData = isNewEvent ? {} : location.state.event;
+  const initialState = location.state.event || {};
   const currentDate = location.state.dateOfEvent;
-  const isToday =
-    new Date().toDateString() === new Date(currentDate).toDateString();
-
   const accountList = accountInfo.map((account) => {
     const accountOptions = {};
-    accountOptions.label = account.accountId;
-    accountOptions.value = account.email;
+    accountOptions.label = account.email;
+    accountOptions.value = account.accountId;
 
     return accountOptions;
   });
+  const hasEventTimezone = user.timezone !== initialState.timezone;
+  const isToday =
+    new Date().toDateString() === new Date(currentDate).toDateString();
 
   const [accountId, setAccountId] = useState(accountList[0].value);
-  const [title, setTitle] = useState(isNewEvent ? "" : eventData.title);
-  const [place, setPlace] = useState(isNewEvent ? "" : eventData.place);
-  const [description, setDescription] = useState(eventData.description || "");
+  const [title, setTitle] = useState(isNewEvent ? "" : initialState.title);
+  const [place, setPlace] = useState(isNewEvent ? "" : initialState.place);
+  const [description, setDescription] = useState(
+    initialState.description || "",
+  );
   const [isAllDayEvent, setIsAllDayEvent] = useState(!!isNewEvent);
   const [startDate, setStartDate] = useState(
     isNewEvent
       ? isToday
         ? new Date()
         : currentDate
-      : new Date(eventData.startAt),
+      : new Date(initialState.startAt),
   );
   const [endDate, setEndDate] = useState(
     isNewEvent
       ? isToday
         ? new Date()
         : currentDate
-      : new Date(eventData.endAt),
+      : new Date(initialState.endAt),
   );
-  const timezonePlaceholder = getTimezoneFormat(startDate);
-  const startTimePlaceholder = startDate.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
+  const labeledTimezone = TIMEZONE_LIST.filter((option) => {
+    return (
+      option.value === initialState.timezone || option.value === user.timezone
+    );
   });
-  const endTimePlaceholder = endDate.toLocaleTimeString("en-US", {
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: true,
-  });
-  const [timezone, setTimezone] = useState(timezonePlaceholder || "");
-  const [startTime, setStartTime] = useState(startDate.toLocaleTimeString());
-  const [endTime, setEndTime] = useState(endDate.toLocaleTimeString());
+
+  const [timezone, setTimezone] = useState(
+    labeledTimezone.length === 1 && labeledTimezone[0].value
+      ? labeledTimezone[0].value
+      : initialState.timezone,
+  );
+
+  let convertedStartDate;
+  let convertedEndDate;
+  let convertedStartTime;
+  let convertedEndTime;
+
+  if (hasEventTimezone && !isNewEvent) {
+    const convertedStart = convertTimeWithTimezone(
+      initialState.startAt,
+      timezone,
+    );
+    const convertedEnd = convertTimeWithTimezone(initialState.endAt, timezone);
+
+    convertedStartDate = convertedStart.split(",")[0].trim();
+    convertedEndDate = convertedEnd.split(",")[0].trim();
+    convertedStartTime = convertedStart.split(",")[1].trim();
+    convertedEndTime = convertedEnd.split(",")[1].trim();
+  }
+
+  const [startTime, setStartTime] = useState(
+    hasEventTimezone ? convertedStartTime : initialState.startAt,
+  );
+  const [endTime, setEndTime] = useState(
+    hasEventTimezone ? convertedEndTime : initialState.endAt,
+  );
   const [conflicts, setConflicts] = useState([]);
   const [hasConflictAlert, sethasConflictAlert] = useState(false);
 
+  // NOTE: 시간대가 설정된 이벤트의 경우 상세페이지의 시간을 시간대에 맞게 변환합니다.
   function handleAllDayEventChange(ev) {
     setIsAllDayEvent(ev.target.checked);
   }
 
   async function updateEventData() {
-    const convertedStartDate = new Date(startDate).toDateString();
-    const convertedEndDate = new Date(endDate).toDateString();
-    const formattedStartDate = new Date(`${convertedStartDate} ${startTime}`);
-    const formattedEndDate = new Date(`${convertedEndDate} ${endTime}`);
+    const convertedUpdateStartDate = startDate.toLocaleDateString();
+    const convertedUpdateEndDate = endDate.toLocaleDateString();
+    const formattedStartDate = `${convertedUpdateStartDate} ${startTime}`;
+    const formattedEndDate = `${convertedUpdateEndDate} ${endTime}`;
 
     const startAt = isAllDayEvent
-      ? new Date(startDate).setHours(0, 0, 0, 0)
+      ? startDate.setHours(0, 0, 0, 0)
       : formattedStartDate;
 
     const endAt = isAllDayEvent
-      ? new Date(
-          new Date(endDate).setDate(new Date(endDate).getDate() + 1),
-        ).setHours(0, 0, 0, 0)
+      ? endDate.setDate(endDate.getDate() + 1).setHours(0, 0, 0, 0)
       : formattedEndDate;
 
     const updatedEventData = {
-      dataId: eventData._id,
+      dataId: initialState._id,
       title,
       place,
       startAt,
@@ -122,10 +144,8 @@ function ScheduleDetails({ isNewEvent = false }) {
       provider,
     };
 
-    console.log("업데이트할 데이터:", updatedEventData);
-
     const response = await axios.patch(
-      `${API.EVENTS}/${eventData.eventId}`,
+      `${API.EVENTS}/${initialState.eventId}`,
       { updatedEventData },
       { withCredentials: true },
     );
@@ -139,25 +159,23 @@ function ScheduleDetails({ isNewEvent = false }) {
   }
 
   async function createEvent() {
-    const convertedStartDate = new Date(startDate).toDateString();
-    const convertedEndDate = new Date(endDate).toDateString();
-    const formattedStartDate = new Date(`${convertedStartDate} ${startTime}`);
-    const formattedEndDate = new Date(`${convertedEndDate} ${endTime}`);
+    const convertedNewStartDate = startDate.toLocaleDateString();
+    const convertedNewEndDate = endDate.toLocaleDateString();
+    const formattedStartDate = `${convertedNewStartDate} ${startTime}`;
+    const formattedEndDate = `${convertedNewEndDate} ${endTime}`;
 
     let startAt;
     let endAt;
 
     if (isAllDayEvent) {
-      startAt = new Date(startDate).toDateString();
-      endAt = new Date(endDate);
+      startAt = startDate.toLocaleDateString();
+      endAt = endDate;
       endAt.setDate(endAt.getDate() + 1);
-      endAt = endAt.toDateString();
+      endAt = endAt.toLocaleDateString();
     } else {
       startAt = formattedStartDate;
       endAt = formattedEndDate;
     }
-
-    // TODO. startAt과 endAt을 ISO 문자열로 변환 (API 요구사항에 따라 필요한 경우)
 
     const newEventData = {
       accountId,
@@ -216,7 +234,7 @@ function ScheduleDetails({ isNewEvent = false }) {
       <div className="flex flex-col items-center w-full h-full overflow-hidden">
         {hasConflictAlert && (
           <ConflictAlert
-            hadnleConfirmEvent={handleSaveWithConflict}
+            handleConfirmEvent={handleSaveWithConflict}
             handleAlertPopUp={sethasConflictAlert}
             conflictList={conflicts}
           />
@@ -269,7 +287,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                   />
                   {isAllDayEvent ? null : (
                     <TimePicker
-                      initialTime={startTimePlaceholder}
+                      initialTime={startTime}
                       handleTimeClick={setStartTime}
                     />
                   )}
@@ -284,14 +302,14 @@ function ScheduleDetails({ isNewEvent = false }) {
                   />
                   {isAllDayEvent ? null : (
                     <TimePicker
-                      initialTime={endTimePlaceholder}
+                      initialTime={endTime}
                       handleTimeClick={setEndTime}
                     />
                   )}
                 </section>
                 <div className="flex items-center justify-center text-sm font-thin w-290">
                   <DropDownTextMenu
-                    placeholder={timezonePlaceholder}
+                    placeholder={timezone}
                     handleOptionChange={setTimezone}
                     options={TIMEZONE_LIST}
                   />
@@ -299,8 +317,10 @@ function ScheduleDetails({ isNewEvent = false }) {
               </div>
               <p className="font-light text-15 text-slate-600">{timezone}</p>
               <div className="flex items-center justify-start space-x-10">
-                <label htmlFor="allDayEvent">
-                  <p className="text-17 text-slate-800">All day event</p>
+                <label
+                  htmlFor="allDayEvent"
+                  className="flex items-center space-x-10"
+                >
                   <input
                     id="allDayEvent"
                     type="checkbox"
@@ -308,6 +328,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                     className="w-17 h-17"
                     onChange={handleAllDayEventChange}
                   />
+                  <p className="text-17 text-slate-800">All day event</p>
                 </label>
               </div>
             </aside>
@@ -329,12 +350,12 @@ function ScheduleDetails({ isNewEvent = false }) {
                       <div className="w-230 text-15">
                         <DropdownMenu
                           options={accountList}
-                          placeholder={user}
+                          placeholder={user.email}
                           handleOptionChange={setAccountId}
                         />
                       </div>
                     ) : (
-                      <p>{user}</p>
+                      <p>{user.email}</p>
                     )}
                   </div>
                   <div className="flex items-center justify-start space-x-25">
@@ -368,7 +389,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                 </nav>
                 <div className="w-full h-full space-y-20 font-light text-slate-700">
                   {!isNewEvent &&
-                    eventData.attendees.map((attendee) => {
+                    initialState.attendees.map((attendee) => {
                       return (
                         <div
                           key={attendee}
