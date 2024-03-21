@@ -2,15 +2,18 @@ import React, { useState, useRef, useEffect } from "react";
 
 function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
   const [isOpen, setIsOpen] = useState(false);
+  const displayView = options.filter((option) => option.value === placeholder);
   const [selectedOption, setselectedOption] = useState(
-    placeholder || (options.length ? options[0].value : ""),
+    displayView[0].label || (options.length ? options[0].label : ""),
   );
   const [filter, setFilter] = useState("");
   const optionRef = useRef(null);
 
   const filteredOption = filter
-    ? options.filter((option) =>
-        option.value.toLowerCase().includes(filter.toLowerCase()),
+    ? options.filter(
+        (option) =>
+          option.label &&
+          option.label.toLowerCase().includes(filter.toLowerCase()),
       )
     : options;
 
@@ -27,11 +30,12 @@ function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
   }, []);
 
   const selectOption = (option) => {
-    setselectedOption(option.value);
+    setselectedOption(option.label);
     handleOptionChange(option.value);
     setIsOpen(false);
     setFilter("");
   };
+
   return (
     <div className="relative inline-block w-full text-left" ref={optionRef}>
       <div className="flex flex-col items-center w-full shadow-sm">
@@ -40,7 +44,7 @@ function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
           value={selectedOption}
           onChange={(event) => {
             setFilter(event.target.value);
-            setselectedOption(event.target.value);
+            setselectedOption(event.target.label);
           }}
           onClick={() => setIsOpen(!isOpen)}
           placeholder="Select time"
@@ -56,7 +60,7 @@ function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
                   className="px-4 py-10 cursor-pointer hover:bg-gray-100"
                   onClick={() => selectOption(option)}
                 >
-                  {option.value}
+                  {option.label}
                 </li>
               ))}
             </ul>

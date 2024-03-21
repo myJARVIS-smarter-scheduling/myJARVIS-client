@@ -10,10 +10,10 @@ function DropdownMenu({ options = [], placeholder, handleOptionChange }) {
   const dropdownRef = useRef();
 
   const handleSelect = (option) => {
-    setSelectedOption(option.value);
+    setSelectedOption(option.label);
     setIsOpen(false);
 
-    handleOptionChange(option.label);
+    handleOptionChange(option.value);
   };
 
   useEffect(() => {
@@ -52,12 +52,12 @@ function DropdownMenu({ options = [], placeholder, handleOptionChange }) {
             <div className="w-full overflow-auto max-h-300">
               {options.map((option) => (
                 <button
-                  key={option.label}
+                  key={option.value}
                   type="button"
                   className="block w-full py-6 overflow-hidden text-left text-gray-700 px-15 hover:bg-gray-100"
                   onClick={() => handleSelect(option)}
                 >
-                  {option.value}
+                  {option.label}
                 </button>
               ))}
             </div>
