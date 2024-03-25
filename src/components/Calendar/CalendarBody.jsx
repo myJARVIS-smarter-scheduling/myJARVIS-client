@@ -85,12 +85,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     setSelectedEvent(null);
   }
 
-  const handleKeyDown = (event, callback) => {
-    if (event.key === "Enter" || event.key === " ") {
-      callback();
-    }
-  };
-
   function getCalendarDates(thisMonth) {
     const dateList = [];
 
@@ -170,32 +164,53 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     );
   }
 
+  function isAllDayEventBasedOnDuration(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+
+    const diff = end - start;
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    return diff === oneDayInMilliseconds;
+  }
+
   function renderEventsForDate(date, accountList) {
     const allEvents = accountList.flatMap((account, accountIndex) =>
       account.events.map((event) => ({
         ...event,
+        email: account.email,
         accountIndex,
         startAt: new Date(event.startAt),
         endAt: new Date(event.endAt),
+        duration: new Date(event.endAt) - new Date(event.startAt),
+        isMultiDay:
+          new Date(event.endAt) - new Date(event.startAt) > 24 * 60 * 60 * 1000,
+        isAllDay: isAllDayEventBasedOnDuration(event.startAt, event.endAt),
       })),
     );
 
     const sortedEvents = allEvents.sort((a, b) => {
-      const dateOfA = new Date(a.startAt);
-      const dateOfB = new Date(b.startAt);
+      if (a.isMultiDay && b.isMultiDay) {
+        const startDiff = a.startAt - b.startAt;
 
-      const dateStringA = `${dateOfA.getFullYear()}/${dateOfA.getMonth() + 1}/${dateOfA.getDate()}`;
-      const dateStringB = `${dateOfB.getFullYear()}/${dateOfB.getMonth() + 1}/${dateOfB.getDate()}`;
+        if (startDiff !== 0) return startDiff;
+        return b.duration - a.duration;
+      } else if (a.isMultiDay) {
+        return -1;
+      } else if (b.isMultiDay) {
+        return 1;
+      }
 
-      if (dateStringA < dateStringB) return -1;
-      if (dateStringA > dateStringB) return 1;
+      if (a.isAllDay && !b.isAllDay) {
+        return -1;
+      } else if (!a.isAllDay && b.isAllDay) {
+        return 1;
+      }
 
-      return a.accountIndex - b.accountIndex;
+      return a.startAt - b.startAt;
     });
 
-    const isEventOverlapping = (event, dayStart, dayEnd) => {
-      return event.startAt <= dayEnd && event.endAt >= dayStart;
-    };
+    const renderedSections = [];
 
     const startOfDay = new Date(
       date.getFullYear(),
@@ -205,87 +220,60 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     const endOfDay = new Date(
       date.getFullYear(),
       date.getMonth(),
-      date.getDate(),
-      23,
-      59,
-      59,
-      999,
+      date.getDate() + 1,
     );
-
-    const renderedSections = [];
-
-    const previousDateStart = new Date(startOfDay);
-    previousDateStart.setDate(startOfDay.getDate() - 1);
-
-    const previousDateEnd = new Date(endOfDay);
-    previousDateEnd.setDate(endOfDay.getDate() - 1);
-
-    const previousDayEventCount = allEvents.filter((event) =>
-      isEventOverlapping(event, previousDateStart, previousDateEnd),
-    ).length;
-
-    const currentDayEventCount = allEvents.filter((event) =>
-      isEventOverlapping(event, startOfDay, endOfDay),
-    ).length;
-
-    const diffCount = Math.max(0, previousDayEventCount - currentDayEventCount);
-
-    for (let i = 0; i < diffCount; i += 1) {
-      renderedSections.push(
-        <section
-          key={`empty-${i}`}
-          className="flex items-center justify-start h-20 mt-5"
-        ></section>,
-      );
-    }
 
     sortedEvents
       .map((event) => {
         const eventStartDate = new Date(event.startAt);
         const eventEndDate = new Date(event.endAt);
 
-        const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-        const durationInMilliseconds = eventEndDate - eventStartDate;
-        const isDurationMoreThanADay =
-          durationInMilliseconds > oneDayInMilliseconds;
-        const isDurationToday =
-          durationInMilliseconds === oneDayInMilliseconds &&
-          isSameDay(eventStartDate, date);
-
-        const isContinuousEvent =
-          date >= eventStartDate && date <= eventEndDate;
-        const isSameDayWithEvent = isSameDay(eventStartDate, date);
-        const isSelectedEvent =
-          selectedEvent && selectedEvent._id === event._id;
+        const isAllDayEvent = isAllDayEventBasedOnDuration(
+          event.startAt,
+          event.endAt,
+        );
+        const isMultiDayEvent =
+          eventEndDate.getTime() - eventStartDate.getTime() >
+          24 * 60 * 60 * 1000;
+        const isToday = isSameDay(eventStartDate, date);
+        const isEventInCurrentDay =
+          new Date(eventStartDate) < endOfDay &&
+          new Date(eventEndDate) > startOfDay;
+        const isStartDayMatch = isSameDay(eventStartDate, date);
 
         const accountBorderColor = CALENDAR_BORDER_COLORS[event.accountIndex];
         const accountColorLight = CALENDAR_COLORS_LIGHT[event.accountIndex];
         const accountColorStrong = CALENDAR_COLORS_STRONG[event.accountIndex];
 
-        if (isContinuousEvent || (!isContinuousEvent && isSameDayWithEvent)) {
+        const isSelectedEvent =
+          selectedEvent && selectedEvent._id === event._id;
+
+        if (isEventInCurrentDay && (isAllDayEvent ? isStartDayMatch : true)) {
+          const colorClass =
+            isAllDayEvent || isMultiDayEvent ? accountColorLight : "";
+          const displayTitleAndBorder = isStartDayMatch ? "block" : "none";
+
           renderedSections.push(
-            <section key={event._id}>
-              <div
+            <section
+              key={event._id}
+              className={`flex items-center h-20 justify-start cursor-pointer ${colorClass} mt-5`}
+            >
+              <button
+                type="button"
                 onClick={() => handleEventClick(event)}
-                onKeyDown={(ev) =>
-                  handleKeyDown(ev, () => handleEventClick(event))
-                }
-                role="button"
-                tabIndex="0"
-                className={`flex items-center h-20 justify-start cursor-pointer ${(isDurationMoreThanADay || isDurationToday) && accountColorLight} mt-5`}
+                className={`relative w-full h-20 ${displayTitleAndBorder === "block" ? `border-l-4 ${accountBorderColor}` : ""} px-5 overflow-hidden text-clip shrink cursor-pointer`}
               >
-                {isSameDayWithEvent && (
-                  <div
-                    className={`relative w-full h-20 border-l-4 ${accountBorderColor} px-5 overflow-hidden text-clip shrink cursor-pointer`}
-                  >
-                    <p className="w-full h-20 text-left text-slate-900">
-                      {event.title}
-                    </p>
-                  </div>
+                {displayTitleAndBorder === "block" && (
+                  <p className="w-full h-20 text-left text-slate-900">
+                    {event.title}
+                  </p>
                 )}
-              </div>
-              {isSelectedEvent && isSameDayWithEvent && (
-                <div ref={schedulePreviewRef} className="absolute z-20">
+              </button>
+              {isSelectedEvent && isToday && (
+                <div
+                  ref={schedulePreviewRef}
+                  className="absolute inset-x-auto top-0 z-20 sm:top-1/2"
+                >
                   <SchedulePreview
                     accountColor={accountColorStrong}
                     eventInfo={selectedEvent}
