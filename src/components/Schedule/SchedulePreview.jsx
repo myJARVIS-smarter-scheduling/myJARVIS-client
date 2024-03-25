@@ -10,7 +10,7 @@ import {
   useAccountEventStore,
 } from "../../store/account";
 
-import { CALENDAR_DAYS, CALENDAR_MONTHS } from "../../constant/calendar";
+import { CALENDAR_DAYS } from "../../constant/calendar";
 import API from "../../config/api";
 
 function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
@@ -21,19 +21,27 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
   const navigate = useNavigate();
   const { deleteEvent } = useAccountEventStore();
   const { provider } = useLoginProviderStore();
-
-  const { title } = eventInfo;
+  const { title, attendees } = eventInfo;
   const eventStartDate = new Date(eventInfo.startAt);
   const eventEndDate = new Date(eventInfo.endAt);
-  const eventMonth = eventStartDate.getMonth();
-  const eventDate = eventStartDate.getDate();
   const eventDay = CALENDAR_DAYS[eventStartDate.getDay()];
-  const eventMonthLabel = CALENDAR_MONTHS[eventMonth];
+
+  function setIsAllDayEventBasedOnDuration(startDate, endDate) {
+    const start = new Date(startDate);
+    const end = new Date(endDate);
+    const diff = end - start;
+
+    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+    return diff === oneDayInMilliseconds;
+  }
+
+  const isAllDayEvent = setIsAllDayEventBasedOnDuration(
+    eventStartDate,
+    eventEndDate,
+  );
   const location = eventInfo.place;
   const attendeesCount = eventInfo.attendees.length;
-  const { attendees } = eventInfo;
-
-  console.log(eventInfo, "eventInfo");
 
   const formattedStartDate = eventStartDate.toLocaleString("en-US", {
     month: "short",
@@ -50,12 +58,16 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
 
   function handleEditButtonClick(event) {
     navigate(`/events/${event.eventId}/editing`, {
-      state: { event },
+      state: { event: { ...event, isAllDayEvent } },
     });
   }
 
   async function handleDeleteButtonClick(event) {
-    const accountData = { accountId: event.accountId, provider };
+    const accountData = {
+      accountId: event.accountId,
+      provider,
+    };
+
     const response = await axios.delete(`${API.EVENTS}/${event._id}`, {
       data: accountData,
       withCredentials: true,
@@ -124,26 +136,22 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
             <p className="space-y-5">
               <span>{eventDay}</span>
               <span>&#44;</span>
-              {/* <span>{eventMonthLabel}</span> */}
               <span>{formattedStartDate}</span>
-              {/* <span>{eventDate}</span> */}
             </p>
-            <span>&#183;</span>
-            <p className="flex items-center space-x-5">
-              <p>
-                {/* <span>{eventStartHour}</span>
-                <span>&#58;</span>
-                <span>{eventStartMinute}</span> */}
-                <span>{formattedStartTime}</span>
-              </p>
-              <span>&#45;</span>
-              <p>
-                {/* <span>{eventEndHour}</span>
-                <span>&#58;</span>
-                <span>{eventEndMinute}</span> */}
-                <span>{formattedEndTime}</span>
-              </p>
-            </p>
+            {!isAllDayEvent ? (
+              <>
+                <span>&#183;</span>
+                <p className="flex items-center space-x-5">
+                  <p>
+                    <span>{formattedStartTime}</span>
+                  </p>
+                  <span>&#45;</span>
+                  <p>
+                    <span>{formattedEndTime}</span>
+                  </p>
+                </p>
+              </>
+            ) : null}
           </div>
         </section>
         <section className="flex items-center h-full space-x-25 w-150">
