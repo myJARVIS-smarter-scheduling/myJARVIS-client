@@ -55,7 +55,6 @@ function RightSideBar() {
         )}
       </nav>
       <hr className="m-5" />
-      {/* 여기서부터는 업무관리 툴 연동페이지입니다. */}
       <nav className="relative flex items-center justify-center">
         <div
           className={`flex items-center justify-center w-45 h-45 ${navbarItem === "asana" && isRightSidebarOpen && selectedBackgroundPink} hover:bg-slate-200 hover:rounded-full`}
