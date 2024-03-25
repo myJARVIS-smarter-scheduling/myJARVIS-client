@@ -18,7 +18,7 @@ function RightSideBarItems() {
 
   return (
     <aside
-      className={`flex-shrink-0 h-full bg-white w-340 shadow-left ${navbarItem === "asana" && "bg-[#dadada]"}`}
+      className={`flex-shrink-0 h-full  w-340 shadow-left ${navbarItem === "asana" ? "bg-[#dadada]" : "bg-white"}`}
     >
       <nav className="flex items-center justify-between w-full border-b flex-nowrap py-13 px-15 text-slate-700">
         <p className="text-2xl font-normal capitalize">{navbarItem}</p>
