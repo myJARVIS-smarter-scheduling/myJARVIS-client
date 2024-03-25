@@ -10,8 +10,6 @@ export const convertTimeWithTimezone = (dateString, eventTimezone) => {
     minute: "2-digit",
   };
 
-  console.log(options, eventDate, "options, eventDate");
-
   const formattedDate = new Intl.DateTimeFormat("en-US", options).format(
     eventDate,
   );

@@ -22,15 +22,15 @@ import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
 
 import API from "../../config/api";
-import fetchData from "../../config/graphFetch";
-import { protectedResources } from "../../config/authConfig";
 import { CALENDAR_VIEW } from "../../constant/calendar";
+import fetchData from "../../config/graphFetch";
 import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken";
+import { protectedResources } from "../../config/authConfig";
 
 function MainPage() {
   const { instance: msalInstance } = useMsal();
   const navigate = useNavigate();
-  const { deleteEvent, connectAccount, accounts } = useAccountEventStore();
+  const { deleteEvent, connectAccount } = useAccountEventStore();
   const { setUser, setAccountInfo, user } = useLoginProviderStore();
   const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
     useNavbarStore();
@@ -38,6 +38,7 @@ function MainPage() {
   const [isFetched, setIsFetched] = useState(false);
 
   const microsoftAccountList = msalInstance.getAllAccounts();
+
   const userIdCookie = new Cookies().get("userId");
 
   const sendAllDataToServer = async (allAccountData) => {
@@ -144,7 +145,7 @@ function MainPage() {
       return;
     }
 
-    async function fetchData() {
+    async function fetchCalendarData() {
       try {
         const response = await axios.post(
           API.CALENDAR.EVENTS,
@@ -175,7 +176,7 @@ function MainPage() {
       }
     }
 
-    fetchData();
+    fetchCalendarData();
   }, [deleteEvent]);
 
   return (

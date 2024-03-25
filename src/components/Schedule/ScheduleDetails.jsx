@@ -149,15 +149,46 @@ function ScheduleDetails({ isNewEvent = false }) {
     setIsAllDay(ev.target.checked);
   }
 
-  function isAllDayEventOfBiweekly(event) {
-    const start = new Date(event.startAt);
-    const end = new Date(event.endAt);
+  async function updateEventData() {
+    const convertedUpdateStartDate = new Date(startDate).toLocaleDateString();
+    const convertedUpdateEndDate = new Date(endDate).toLocaleDateString();
+    const formattedStartDate = `${convertedUpdateStartDate} ${startTime}`;
+    const formattedEndDate = `${convertedUpdateEndDate} ${endTime}`;
+    const { provider } = initialEventState;
 
-    return (
-      end - start === 86400000 &&
-      start.getHours() === 0 &&
-      start.getMinutes() === 0
+    const startAt = isAllDayEvent
+      ? startDate.setHours(0, 0, 0, 0)
+      : formattedStartDate;
+
+    const endAt = isAllDayEvent
+      ? endDate.setDate(endDate.getDate() + 1).setHours(0, 0, 0, 0)
+      : formattedEndDate;
+
+    const updatedEventData = {
+      dataId: initialEventState._id,
+      title,
+      place,
+      startAt,
+      endAt,
+      timezone,
+      isAllDayEvent,
+      description,
+      provider,
+    };
+
+    const response = await axios.patch(
+      `${API.EVENTS}/${initialEventState.eventId}`,
+      { updatedEventData },
+      { withCredentials: true },
     );
+
+    if (response.data.result === "success") {
+      const { updatedEvent } = response.data;
+
+      console.log("Updated Event:", updatedEvent);
+
+      navigate("/calendar");
+    }
   }
 
   async function createEvent() {
@@ -211,49 +242,8 @@ function ScheduleDetails({ isNewEvent = false }) {
 
     if (response.data.result === "success") {
       const { newEvent } = response.data;
-      // addSingleBiWeeklyEvent(newEvent);
-      console.log("셍성된 이벤트:", newEvent);
 
-      navigate("/calendar");
-    }
-  }
-
-  async function updateEventData() {
-    const convertedUpdateStartDate = new Date(startDate).toLocaleDateString();
-    const convertedUpdateEndDate = new Date(endDate).toLocaleDateString();
-    const formattedStartDate = `${convertedUpdateStartDate} ${startTime}`;
-    const formattedEndDate = `${convertedUpdateEndDate} ${endTime}`;
-    const { provider } = initialEventState;
-
-    const startAt = isAllDayEvent
-      ? startDate.setHours(0, 0, 0, 0)
-      : formattedStartDate;
-
-    const endAt = isAllDayEvent
-      ? endDate.setDate(endDate.getDate() + 1).setHours(0, 0, 0, 0)
-      : formattedEndDate;
-
-    const updatedEventData = {
-      dataId: initialEventState._id,
-      title,
-      place,
-      startAt,
-      endAt,
-      timezone,
-      isAllDayEvent,
-      description,
-      provider,
-    };
-
-    const response = await axios.patch(
-      `${API.EVENTS}/${initialEventState.eventId}`,
-      { updatedEventData },
-      { withCredentials: true },
-    );
-
-    if (response.data.result === "success") {
-      const { updatedEvent } = response.data;
-      console.log("업데이트된 이벤트:", updatedEvent);
+      console.log("Created Event:", newEvent);
 
       navigate("/calendar");
     }
@@ -265,6 +255,17 @@ function ScheduleDetails({ isNewEvent = false }) {
     } else {
       updateEventData();
     }
+  }
+
+  function isAllDayEventOfBiweekly(event) {
+    const start = new Date(event.startAt);
+    const end = new Date(event.endAt);
+
+    return (
+      end - start === 86400000 &&
+      start.getHours() === 0 &&
+      start.getMinutes() === 0
+    );
   }
 
   function handleSaveClick() {
