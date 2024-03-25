@@ -23,20 +23,33 @@ export default {
       colors: {
         logo_navy: "#17316F",
         logo_blue: "#2D60DC",
+        primary: "#6171fe",
+        secondary: "#9f6afe",
+        tertiary: "#b79dfe",
+        highlight: "#ddd0fe",
+        light: "#fefefe",
+        dark: "#6658fe",
+        light_rose: "#FFE4E5",
+        light_green: "#E0F7F4",
       },
       animation: {
-        "scale-up": "scale-up 0.3s ease-in-out",
+        background: "background 4s ease-in-out infinite",
+        linear: "backgroundLinear 5s linear infinite",
+        slide:
+          "backgroundSlide 120s linear infinite alternate-reverse forwards;",
       },
       keyframes: {
-        "scale-up": {
-          "0%": {
-            transform: "scale(0)",
-            boxShadow: "0px 1px 3px 1px rgba(0, 0, 0, 0.2)",
-          },
-          "100%": {
-            transform: "scale(1)",
-            boxShadow: "0px 0px 10px 5px rgba(0, 0, 0, 0.2)",
-          },
+        background: {
+          "0%, 100%": { backgroundPosition: "left 0% bottom 0%" },
+          "50%": { backgroundPosition: "left 200% bottom 0%" },
+        },
+        backgroundLinear: {
+          "0%": { backgroundPosition: "0% 50%" },
+          "100%": { backgroundPosition: "200% 50%" },
+        },
+        backgroundSlide: {
+          "0%": { backgroundPosition: "0 0%" },
+          "100%": { backgroundPosition: "100% 50%" },
         },
       },
     },
