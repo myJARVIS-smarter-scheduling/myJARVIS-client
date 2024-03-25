@@ -1,25 +1,38 @@
 import { useMsal } from "@azure/msal-react";
 import { useNavigate } from "react-router-dom";
 import { FaCrown, FaCirclePlus } from "react-icons/fa6";
-import { loginRequest } from "../../config/authConfig";
+import { IoIosCheckboxOutline, IoIosCheckbox } from "react-icons/io";
 
 import API from "../../config/api";
+import { loginRequest } from "../../config/authConfig";
+import { CALENDAR_COLOR_TEXT } from "../../constant/calendar";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
 } from "../../store/account";
-import { useNavbarStore } from "../../store/navbar";
+import { useNavbarStore, useCalendarSelectionStore } from "../../store/navbar";
 
 function EmailConnection() {
   const { instance } = useMsal();
   const { user } = useLoginProviderStore();
   const { accounts } = useAccountEventStore();
   const { setisRightSidebarOpen } = useNavbarStore();
+  const { selectedCalendars, addAccount, removeAccount } =
+    useCalendarSelectionStore();
   const navigate = useNavigate();
+
   const accountEmailList = accounts
     .map((account) => account.email)
     .filter((email) => email !== user.email);
+
+  function handleCalendarClick(email) {
+    if (selectedCalendars.includes(email)) {
+      removeAccount(email);
+    } else {
+      addAccount(email);
+    }
+  }
 
   function getLogoPath(email) {
     if (email.includes("gmail")) {
@@ -59,8 +72,8 @@ function EmailConnection() {
   }
 
   return (
-    <section className="flex flex-col items-start justify-center w-full p-10 my-15">
-      <aside className="w-full min-h-200">
+    <section className="flex flex-col items-center justify-center w-full p-10 my-15">
+      <aside className="w-full min-h-150">
         <p className="flex mb-10 font-light text-center text-20">
           Connected Calendars
         </p>
@@ -91,7 +104,6 @@ function EmailConnection() {
           })}
         </section>
       </aside>
-      {/* TODO. 버튼 클릭시 추가 연동 로직을 구현합니다. */}
       <nav className="flex-col items-start justify-center w-full space-y-20 min-h-100">
         <p className="font-light text-20">Add Calendar</p>
         <form className="flex items-center justify-around">
@@ -133,6 +145,40 @@ function EmailConnection() {
           </div>
         </form>
       </nav>
+      <aside className="w-full space-y-20 mt-50 min-h-200">
+        <p className="flex mb-10 font-light text-center text-20">
+          Select Calendars
+        </p>
+        <div className="space-y-10">
+          {accounts.map((accountInfo, index) => (
+            <div
+              key={accountInfo.email}
+              className="flex items-center justify-start w-full space-x-10 h-30"
+            >
+              <button
+                type="button"
+                className="flex items-center justify-center rounded-full hover:bg-slate-200 w-35 h-35"
+                onClick={() => handleCalendarClick(accountInfo.email)}
+              >
+                {!selectedCalendars.includes(accountInfo.email) ? (
+                  <IoIosCheckboxOutline
+                    size={26}
+                    className={`${CALENDAR_COLOR_TEXT[index]}`}
+                  />
+                ) : (
+                  <IoIosCheckbox
+                    size={26}
+                    className={`${CALENDAR_COLOR_TEXT[index]}`}
+                  />
+                )}
+              </button>
+              <span className="font-normal text-center text-17">
+                {accountInfo.email.split("@")[0]}
+              </span>
+            </div>
+          ))}
+        </div>
+      </aside>
     </section>
   );
 }

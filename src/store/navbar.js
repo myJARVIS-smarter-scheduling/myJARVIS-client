@@ -12,6 +12,20 @@ const navbarOpenStatusStore = (set) => ({
   setNavbarItems: (item) => set({ navbarItem: item }),
 });
 
+const calendarSelectionStore = (set) => ({
+  selectedCalendars: [],
+  addAccount: (email) =>
+    set((state) => ({
+      selectedCalendars: [...state.selectedCalendars, email],
+    })),
+  removeAccount: (email) =>
+    set((state) => ({
+      selectedCalendars: state.selectedCalendars.filter(
+        (prevEmail) => prevEmail !== email,
+      ),
+    })),
+});
+
 const loadingStatusStore = (set) => ({
   isLoading: false,
   setIsLoading: (status) => set({ isLoading: status }),
@@ -35,4 +49,13 @@ const useLoadingStore = create(
   ),
 );
 
-export { useNavbarStore, useLoadingStore };
+const useCalendarSelectionStore = create(
+  devtools(
+    persist(calendarSelectionStore, {
+      name: "calendarSelection",
+      storage: createJSONStorage(() => sessionStorage),
+    }),
+  ),
+);
+
+export { useNavbarStore, useLoadingStore, useCalendarSelectionStore };

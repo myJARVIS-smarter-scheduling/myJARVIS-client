@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import useCurrentMonthStore from "../../store/dates";
 import { useAccountEventStore } from "../../store/account";
+import { useCalendarSelectionStore } from "../../store/navbar";
 
 import SchedulePreview from "../Schedule/SchedulePreview";
 
@@ -21,6 +22,7 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
   const schedulePreviewRef = useRef();
   const { accounts, conflictEvents } = useAccountEventStore();
   const { currentMonth } = useCurrentMonthStore();
+  const { selectedCalendars } = useCalendarSelectionStore();
 
   const CALENDAR_DAYS_LABEL = isMiniCalendar
     ? MINI_CALENDAR_DAYS
@@ -247,8 +249,13 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
 
         const isSelectedEvent =
           selectedEvent && selectedEvent._id === event._id;
+        const isSelectCalendar = selectedCalendars.includes(event.email);
 
-        if (isEventInCurrentDay && (isAllDayEvent ? isStartDayMatch : true)) {
+        if (
+          isEventInCurrentDay &&
+          isSelectCalendar &&
+          (isAllDayEvent ? isStartDayMatch : true)
+        ) {
           const colorClass =
             isAllDayEvent || isMultiDayEvent ? accountColorLight : "";
           const displayTitleAndBorder = isStartDayMatch ? "block" : "none";

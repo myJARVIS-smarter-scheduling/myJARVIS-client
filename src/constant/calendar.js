@@ -1,3 +1,13 @@
+export const CALENDAR_COLOR_TEXT = [
+  "text-red-500",
+  "text-orange-500",
+  "text-yellow-500",
+  "text-green-500",
+  "text-blue-500",
+  "text-indigo-500",
+  "text-purple-500",
+];
+
 export const CALENDAR_BORDER_COLORS = [
   "border-red-500",
   "border-orange-500",
