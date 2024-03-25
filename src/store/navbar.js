@@ -1,14 +1,38 @@
 import { create } from "zustand";
-import { devtools } from "zustand/middleware";
+import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
-const navbarOpenStatus = (set) => ({
-  isSidebarOpen: false,
-  setIsSidebarOpen: (status) => set({ isSidebarOpen: status }),
+const navbarOpenStatusStore = (set) => ({
+  isRightSidebarOpen: false,
+  setisRightSidebarOpen: (status) => set({ isRightSidebarOpen: status }),
+
+  isLeftSidebarOpen: true,
+  setisLeftSidebarOpen: (status) => set({ isLeftSidebarOpen: status }),
 
   navbarItem: null,
   setNavbarItems: (item) => set({ navbarItem: item }),
 });
 
-const useNavbarStore = create(devtools(navbarOpenStatus));
+const loadingStatusStore = (set) => ({
+  isLoading: false,
+  setIsLoading: (status) => set({ isLoading: status }),
+});
 
-export default useNavbarStore;
+const useNavbarStore = create(
+  devtools(
+    persist(navbarOpenStatusStore, {
+      name: "navbar",
+      storage: createJSONStorage(() => sessionStorage),
+    }),
+  ),
+);
+
+const useLoadingStore = create(
+  devtools(
+    persist(loadingStatusStore, {
+      name: "isLoading",
+      storage: createJSONStorage(() => sessionStorage),
+    }),
+  ),
+);
+
+export { useNavbarStore, useLoadingStore };
