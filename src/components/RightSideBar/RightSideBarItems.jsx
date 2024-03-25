@@ -1,9 +1,11 @@
+import { useState, useEffect } from "react";
 import { IoClose } from "react-icons/io5";
 
 import EmailConnection from "./EmailConnection";
 import UserSettings from "./UserSettings";
+import AsanaPage from "./Asana/AsanaPage";
 
-import useNavbarStore from "../../store/navbar";
+import { useNavbarStore } from "../../store/navbar";
 
 function RightSideBarItems() {
   const { setisRightSidebarOpen, navbarItem, setNavbarItems } =
@@ -15,7 +17,9 @@ function RightSideBarItems() {
   }
 
   return (
-    <aside className="flex-shrink-0 h-full bg-white w-330 shadow-left">
+    <aside
+      className={`flex-shrink-0 h-full bg-white w-340 shadow-left ${navbarItem === "asana" && "bg-[#e1e1e1]"}`}
+    >
       <nav className="flex items-center justify-between w-full border-b flex-nowrap py-13 px-15 text-slate-700">
         <p className="text-2xl font-normal capitalize">{navbarItem}</p>
         <IoClose
@@ -24,9 +28,10 @@ function RightSideBarItems() {
           onClick={() => handleCloseButtonClick()}
         />
       </nav>
-      <nav className="px-10">
+      <nav className="h-full px-10">
         {navbarItem === "profile" && <EmailConnection />}
         {navbarItem === "settings" && <UserSettings />}
+        {navbarItem === "asana" && <AsanaPage />}
       </nav>
     </aside>
   );

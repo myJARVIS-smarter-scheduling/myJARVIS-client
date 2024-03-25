@@ -1,34 +1,60 @@
+import { useMsal } from "@azure/msal-react";
+import { useNavigate } from "react-router-dom";
 import { FaCrown, FaCirclePlus } from "react-icons/fa6";
+import { loginRequest } from "../../config/authConfig";
+
 import API from "../../config/api";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
 } from "../../store/account";
+import { useNavbarStore } from "../../store/navbar";
 
 function EmailConnection() {
+  const { instance } = useMsal();
   const { user } = useLoginProviderStore();
   const { accounts } = useAccountEventStore();
+  const { setisRightSidebarOpen } = useNavbarStore();
+  const navigate = useNavigate();
   const accountEmailList = accounts
     .map((account) => account.email)
-    .filter((email) => email !== user);
+    .filter((email) => email !== user.email);
 
   function getLogoPath(email) {
     if (email.includes("gmail")) {
       return "/assets/google_calendar_logo.png";
     }
+
     return "/assets/outlook_calendar_logo.png";
   }
 
+  async function handleOutlookRedirect() {
+    instance
+      .loginRedirect({
+        ...loginRequest,
+        prompt: "select_account",
+      })
+      .then((response) => {
+        const account = response.account[response.account.length - 1];
+
+        setisRightSidebarOpen(false);
+        navigate("/");
+      })
+      .catch((error) => console.log(error));
+  }
+
   async function handleAddAccountClick(ev) {
-    // TODO. 연동된 계정 추가 로직의 에러핸들링을 구현합니다. (예: 이미 연동된 계정일 경우)
     ev.preventDefault();
+
     const provider = ev.currentTarget.id;
 
     if (provider === "google") {
       window.location.href = API.AUTH.GOOGLE;
-    } else {
-      window.location.href = API.AUTH.OUTLOOK_PROXY;
+    }
+
+    if (provider === "microsoft") {
+      handleOutlookRedirect();
     }
   }
 
@@ -40,11 +66,11 @@ function EmailConnection() {
         </p>
         <section className="flex items-center justify-start px-10 space-x-5 font-thin text-15">
           <img
-            src={`${getLogoPath(user)}`}
+            src={`${getLogoPath(user.email)}`}
             className="w-20 h-auto"
             alt="calendar logo"
           />
-          <p className="text-center">{user}</p>
+          <p className="text-center">{user.email}</p>
           <FaCrown size={20} className="text-yellow-300" />
         </section>
         <section>
@@ -72,6 +98,7 @@ function EmailConnection() {
           <div className="relative flex items-center justify-center rounded-lg w-60 h-60 hover:bg-slate-100">
             <button
               id="google"
+              aria-label="Add Google Calendar Account"
               className="hover:bg-slate-100"
               onClick={handleAddAccountClick}
             >
@@ -88,7 +115,8 @@ function EmailConnection() {
           </div>
           <div className="relative flex items-center justify-center rounded-lg w-60 h-60 hover:bg-slate-100">
             <button
-              id="outlook"
+              id="microsoft"
+              aria-label="Add Outlook Calendar Account"
               className="hover:bg-slate-100"
               onClick={handleAddAccountClick}
             >
