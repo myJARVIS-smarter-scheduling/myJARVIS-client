@@ -5,8 +5,6 @@ import { HiPencilSquare } from "react-icons/hi2";
 import { formatDateWithoutYear } from "../../utils/convertDateFormat";
 
 function ConflictAlertContent({ conflictEvent, handleAlertPopUp }) {
-  const navigate = useNavigate();
-  const { eventId } = conflictEvent;
   const { title } = conflictEvent;
   const startDate = new Date(conflictEvent.startAt);
   const endDate = new Date(conflictEvent.endAt);
@@ -23,14 +21,6 @@ function ConflictAlertContent({ conflictEvent, handleAlertPopUp }) {
     hour12: true,
   });
 
-  function handleEditEvent() {
-    handleAlertPopUp(false);
-    navigate(`/events/confilcts/${eventId}/editing`, {
-      state: { event: conflictEvent },
-      replace: true,
-    });
-  }
-
   return (
     <div className="flex items-center justify-between w-full font-light bg-red-100 border-l-8 border-red-600 p-15 text-13 overflow-clip">
       <div>
@@ -45,13 +35,6 @@ function ConflictAlertContent({ conflictEvent, handleAlertPopUp }) {
             {startTime} - {endTime}
           </p>
         </div>
-      </div>
-      <div>
-        <HiPencilSquare
-          size={25}
-          className="text-red-500 cursor-pointer"
-          onClick={handleEditEvent}
-        />
       </div>
     </div>
   );

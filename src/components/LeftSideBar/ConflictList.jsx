@@ -82,21 +82,30 @@ function ConflictList() {
     }
   }
 
-  console.log("Weekly conflictEvents", Weeklyconflicts);
-
   return (
     <main className="flex flex-col items-center justify-start w-full overflow-y-scroll">
-      {Weeklyconflicts.map((conflictPair) => {
+      {Weeklyconflicts.map((conflictPair, index) => {
         const accountIndex = accountInfo.findIndex(
           (account) => account.accountId === conflictPair.accountId,
         );
 
         return (
-          <ConflictSchedule
-            key={conflictPair.accounId}
-            conflictEvents={conflictPair}
-            accountIndex={accountIndex}
-          />
+          <>
+            {index % 2 === 0 && (
+              <div className="relative flex py-5 items-center w-full">
+                <div className="flex-grow border-t border-slate-400"></div>
+                <span className="flex-shrink mx-10 text-slate-400">
+                  Content
+                </span>
+                <div className="flex-grow border-t border-slate-400"></div>
+              </div>
+            )}
+            <ConflictSchedule
+              key={conflictPair.accounId}
+              conflictEvents={conflictPair}
+              accountIndex={accountIndex}
+            />
+          </>
         );
       })}
     </main>

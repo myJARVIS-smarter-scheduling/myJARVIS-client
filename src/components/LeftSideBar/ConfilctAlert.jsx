@@ -29,7 +29,7 @@ function ConflictAlert({ handleConfirmEvent, handleAlertPopUp, conflictList }) {
   });
 
   return (
-    <div className="absolute z-30 flex flex-col items-center p-20 bg-white border border-red-100 rounded-lg shadow-2xl space-y-15 w-200 min-w-500 max-h-500 top-1/4">
+    <div className="absolute z-30 flex flex-col items-center p-20 bg-white border border-red-100 rounded-lg shadow-2xl left-60 space-y-15 w-200 min-w-500 max-h-500 top-190">
       <div className="flex justify-end w-full cursor-pointer h-15">
         <IoClose
           size={30}
