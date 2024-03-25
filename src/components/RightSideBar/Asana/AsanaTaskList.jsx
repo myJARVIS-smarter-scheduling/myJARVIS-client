@@ -26,7 +26,7 @@ function AsanaTaskList({ handleFetchStatus }) {
     workspaceList.length > 0 ? workspaceList[0] : "Select Workspace";
 
   return (
-    <main className="flex flex-col h-full px-5 space-y-20">
+    <main className="flex flex-col h-full px-5 space-y-20 overflow-hidden">
       <nav className="text-sm font-normal w-165">
         <DropdownMenu
           options={workspaceOptions}
