@@ -49,12 +49,12 @@ function DropdownMenu({ options = [], placeholder, handleOptionChange }) {
         </button>
         {isOpen && (
           <div className="absolute right-0 z-10 w-full mt-5 font-thin origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
-            <div className="w-full overflow-auto max-h-300">
+            <div className="w-full overflow-auto max-h-400">
               {options.map((option) => (
                 <button
                   key={option.value}
                   type="button"
-                  className="block w-full py-6 overflow-hidden text-left text-gray-700 px-15 hover:bg-gray-100"
+                  className="block w-full py-10 overflow-hidden text-left text-gray-700 truncate px-15 hover:bg-gray-100"
                   onClick={() => handleSelect(option)}
                 >
                   {option.label}

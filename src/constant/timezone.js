@@ -1,4 +1,6 @@
 const TIMEZONE_LIST = [
+  // TODO. Object 혹은 Map 객체로 변경해서 key값으로 바로 조회 가능할지 고민해봅니다.
+  // 다만, 컴포넌트 재사용 하고 있는 점에 유의합니다.
   {
     label: "(GMT-11:00) Niue Time",
     value: "Pacific/Niue",
@@ -24,6 +26,12 @@ const TIMEZONE_LIST = [
     long: -148.4333,
   },
   {
+    label: "(GMT-10:00) Hawaiian Standard Time",
+    value: "Pacific/Honolulu",
+    lat: 21.3069,
+    long: -156.1417,
+  },
+  {
     label: "(GMT-09:30) Marquesas Time",
     value: "Pacific/Marquesas",
     lat: -9,
@@ -38,6 +46,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-09:00) Hawaii-Aleutian Time (Adak)",
     value: "America/Adak",
+    alt: "Alaskan Standard Time",
     lat: 51.88,
     long: -175.3419,
   },
@@ -86,12 +95,14 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-07:00) Mexican Pacific Standard Time - Hermosillo",
     value: "America/Hermosillo",
+    alt: "Mountain Standard Time",
     lat: 29.0667,
     long: -109.0333,
   },
   {
     label: "(GMT-07:00) Mexican Pacific Standard Time - Mazatlan",
     value: "America/Mazatlan",
+    alt: "Mountain Standard Time (Mexico)",
     lat: 23.2167,
     long: -105.5833,
   },
@@ -116,12 +127,14 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-07:00) Pacific Time - Los Angeles",
     value: "America/Los_Angeles",
+    alt: "Pacific Standard Time",
     lat: 34.0522,
     long: -117.7572,
   },
   {
     label: "(GMT-07:00) Pacific Time - Tijuana",
     value: "America/Tijuana",
+    alt: "Pacific Standard Time (Mexico)",
     lat: 32.5333,
     long: -116.9833,
   },
@@ -194,6 +207,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-06:00) Central Standard Time - Mexico City",
     value: "America/Mexico_City",
+    alt: "Central Standard Time (Mexico)",
     lat: 19.4,
     long: -98.85,
   },
@@ -206,6 +220,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-06:00) Central Standard Time - Regina",
     value: "America/Regina",
+    alt: "Canada Central Standard Time",
     lat: 50.4,
     long: -103.35,
   },
@@ -290,6 +305,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-05:00) Central Time - Chicago",
     value: "America/Chicago",
+    alt: "Central Time (US & Canada)",
     lat: 41.85,
     long: -86.35,
   },
@@ -381,6 +397,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-05:00) Peru Standard Time",
     value: "America/Lima",
+    alt: "SA Pacific Standard Time",
     lat: -11.95,
     long: -76.95,
   },
@@ -399,6 +416,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-04:00) Amazon Standard Time - Cuiaba",
     value: "America/Cuiaba",
+    alt: "Central Brazilian Standard Time",
     lat: -14.4167,
     long: -55.9167,
   },
@@ -439,6 +457,12 @@ const TIMEZONE_LIST = [
     long: -68.1,
   },
   {
+    label: "(GMT-04:00) APacific SA Standard Time",
+    value: "America/Santiago",
+    lat: -32.55,
+    long: -69.3333,
+  },
+  {
     label: "(GMT-04:00) Bolivia Time",
     value: "America/La_Paz",
     lat: -15.5,
@@ -465,6 +489,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-04:00) Eastern Time - Indianapolis",
     value: "America/Indiana/Indianapolis",
+    alt: "US Eastern Standard Time",
     lat: 39.7683,
     long: -85.8419,
   },
@@ -495,6 +520,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-04:00) Eastern Time - New York",
     value: "America/New_York",
+    alt: "Eastern Standard Time",
     lat: 40.7142,
     long: -73.9936,
   },
@@ -537,18 +563,28 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-04:00) Guyana Time",
     value: "America/Guyana",
+    alt: "SA Western Standard Time",
     lat: 6.8,
     long: -57.8333,
   },
   {
     label: "(GMT-04:00) Venezuela Time",
     value: "America/Caracas",
+    alt: "Venezuela Standard Time",
     lat: 10.5,
     long: -65.0667,
   },
   {
+    label: "(GMT-03:30) Newfoundland Standard Time",
+    value: "America/St_Johns",
+    lat: 47.5667,
+    long: -51.2833,
+  },
+  // 여기까지함
+  {
     label: "(GMT-03:00) Argentina Standard Time - Buenos Aires",
     value: "America/Buenos_Aires",
+    alt: "Argentina Standard Time",
     lat: -33.4,
     long: -57.55,
   },
@@ -639,6 +675,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-03:00) Atlantic Time - Halifax",
     value: "America/Halifax",
+    alt: "Atlantic Standard Time",
     lat: 44.65,
     long: -62.4,
   },
@@ -675,6 +712,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-03:00) Brasilia Standard Time - Fortaleza",
     value: "America/Fortaleza",
+    alt: "SA Eastern Standard Time",
     lat: -2.2833,
     long: -37.5,
   },
@@ -699,6 +737,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-03:00) Brasilia Standard Time - Sao Paulo",
     value: "America/Sao_Paulo",
+    alt: "E. South America Standard Time",
     lat: -22.4667,
     long: -45.3833,
   },
@@ -729,6 +768,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT-03:00) Paraguay Time",
     value: "America/Asuncion",
+    alt: "Paraguay Standard Time",
     lat: -24.7333,
     long: -56.3333,
   },
@@ -1658,6 +1698,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT+09:00) Korean Standard Time - Seoul",
     value: "Asia/Seoul",
+    alt: "Korea Standard Time",
     lat: 37.55,
     long: 126.9667,
   },
@@ -1893,6 +1934,7 @@ const TIMEZONE_LIST = [
   {
     label: "(GMT+13:00) Phoenix Islands Time",
     value: "America/Phoenix",
+    alt: "US Mountain Standard Time",
     lat: 33.4483,
     long: -111.9267,
   },

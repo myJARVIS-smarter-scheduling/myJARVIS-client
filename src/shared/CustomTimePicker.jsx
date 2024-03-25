@@ -4,7 +4,15 @@ import TIME_OPTIONS from "../constant/schedule";
 
 function TimePicker({ initialTime, handleTimeClick }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [selectedTime, setSelectedTime] = useState(initialTime);
+  const [selectedTime, setSelectedTime] = useState(
+    typeof initialTime !== "string"
+      ? initialTime.toLocaleString("en-US", {
+          hour: "2-digit",
+          minute: "2-digit",
+          hour12: true,
+        })
+      : initialTime,
+  );
   const [filter, setFilter] = useState("");
   const timeRef = useRef(null);
 
