@@ -196,6 +196,7 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
         const startDiff = a.startAt - b.startAt;
 
         if (startDiff !== 0) return startDiff;
+
         return b.duration - a.duration;
       } else if (a.isMultiDay) {
         return -1;
@@ -249,11 +250,11 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
 
         const isSelectedEvent =
           selectedEvent && selectedEvent._id === event._id;
-        const isSelectCalendar = selectedCalendars.includes(event.email);
+        const isUncheckedEvent = selectedCalendars.includes(event.email);
 
         if (
           isEventInCurrentDay &&
-          isSelectCalendar &&
+          !isUncheckedEvent &&
           (isAllDayEvent ? isStartDayMatch : true)
         ) {
           const colorClass =
