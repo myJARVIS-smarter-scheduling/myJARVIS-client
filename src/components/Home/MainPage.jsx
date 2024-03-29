@@ -31,7 +31,7 @@ function MainPage() {
   const { instance: msalInstance } = useMsal();
   const navigate = useNavigate();
   const { deleteEvent, connectAccount } = useAccountEventStore();
-  const { setUser, setAccountInfo, user } = useLoginProviderStore();
+  const { setUser, setAccountInfo } = useLoginProviderStore();
   const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
     useNavbarStore();
   const [graphData, setGraphData] = useState();
