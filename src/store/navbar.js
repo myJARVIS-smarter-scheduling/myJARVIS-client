@@ -14,6 +14,7 @@ const navbarOpenStatusStore = (set) => ({
 
 const calendarSelectionStore = (set) => ({
   selectedCalendars: [],
+  setAccounts: (emails) => set({ selectedCalendars: emails }),
   addAccount: (email) =>
     set((state) => ({
       selectedCalendars: [...state.selectedCalendars, email],

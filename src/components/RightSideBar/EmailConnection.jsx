@@ -145,40 +145,6 @@ function EmailConnection() {
           </div>
         </form>
       </nav>
-      <aside className="w-full space-y-20 mt-50 min-h-200">
-        <p className="flex mb-10 font-light text-center text-20">
-          Select Calendars
-        </p>
-        <div className="space-y-10">
-          {accounts.map((accountInfo, index) => (
-            <div
-              key={accountInfo.email}
-              className="flex items-center justify-start w-full space-x-10 h-30"
-            >
-              <button
-                type="button"
-                className="flex items-center justify-center rounded-full hover:bg-slate-200 w-35 h-35"
-                onClick={() => handleCalendarClick(accountInfo.email)}
-              >
-                {!selectedCalendars.includes(accountInfo.email) ? (
-                  <IoIosCheckboxOutline
-                    size={26}
-                    className={`${CALENDAR_COLOR_TEXT[index]}`}
-                  />
-                ) : (
-                  <IoIosCheckbox
-                    size={26}
-                    className={`${CALENDAR_COLOR_TEXT[index]}`}
-                  />
-                )}
-              </button>
-              <span className="font-normal text-center text-17">
-                {accountInfo.email.split("@")[0]}
-              </span>
-            </div>
-          ))}
-        </div>
-      </aside>
     </section>
   );
 }
