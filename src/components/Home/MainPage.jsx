@@ -147,11 +147,9 @@ function MainPage() {
 
     async function fetchCalendarData() {
       try {
-        const response = await axios.post(
-          API.CALENDAR.EVENTS,
-          {},
-          { withCredentials: true },
-        );
+        const response = await axios.post(API.CALENDAR.EVENTS, {
+          withCredentials: true,
+        });
 
         if (response.data.result === "success") {
           const userInfo = response.data.accountEventList;
