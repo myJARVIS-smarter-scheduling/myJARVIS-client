@@ -1,7 +1,3 @@
-import { useNavigate } from "react-router-dom";
-
-import { HiPencilSquare } from "react-icons/hi2";
-
 import { formatDateWithoutYear } from "../../utils/convertDateFormat";
 
 function ConflictAlertContent({ conflictEvent, handleAlertPopUp }) {
