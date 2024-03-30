@@ -39,8 +39,6 @@ function MainPage() {
 
   const microsoftAccountList = msalInstance.getAllAccounts();
 
-  const userIdCookie = new Cookies().get("userId");
-
   const sendAllDataToServer = async (allAccountData) => {
     try {
       const response = await axios.post(
@@ -141,10 +139,6 @@ function MainPage() {
   }, [isFetched, microsoftAccountList]);
 
   useEffect(() => {
-    if (!userIdCookie) {
-      return;
-    }
-
     async function fetchCalendarData() {
       try {
         const response = await axios.post(API.CALENDAR.EVENTS, {
