@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 
 import TIME_OPTIONS from "../constant/schedule";
 
-function TimePicker({ initialTime, handleTimeClick }) {
+function TimePicker({ initialTime, handleTimeClick, labelForTest }) {
   const [isOpen, setIsOpen] = useState(false);
   const [selectedTime, setSelectedTime] = useState(
     typeof initialTime !== "string"
@@ -43,6 +43,7 @@ function TimePicker({ initialTime, handleTimeClick }) {
     <div className="relative inline-block text-left" ref={timeRef}>
       <div className="flex flex-col items-center shadow-sm">
         <input
+          aria-label={labelForTest}
           type="text"
           value={selectedTime}
           onChange={(event) => {

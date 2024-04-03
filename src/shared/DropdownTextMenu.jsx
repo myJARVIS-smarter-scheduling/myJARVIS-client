@@ -1,6 +1,11 @@
 import React, { useState, useRef, useEffect } from "react";
 
-function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
+function DropDownTextMenu({
+  options,
+  placeholder,
+  testIdName,
+  handleOptionChange,
+}) {
   const [isOpen, setIsOpen] = useState(false);
   const displayView = options.filter((option) => option.value === placeholder);
   const [selectedOption, setselectedOption] = useState(
@@ -40,6 +45,7 @@ function DropDownTextMenu({ options, placeholder, handleOptionChange }) {
     <div className="relative inline-block w-full text-left" ref={optionRef}>
       <div className="flex flex-col items-center w-full shadow-sm">
         <input
+          data-testid={testIdName}
           type="text"
           value={selectedOption}
           onChange={(event) => {

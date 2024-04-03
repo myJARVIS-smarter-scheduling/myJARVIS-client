@@ -218,8 +218,10 @@ function ScheduleDetails({ isNewEvent = false }) {
       );
 
       formattedTimezone = foundAltValue ? foundAltValue.alt : user.timezone;
+      console.log("microsoft timezone", formattedTimezone);
     } else {
       formattedTimezone = timezone;
+      console.log("google timezone", formattedTimezone);
     }
 
     const newEventData = {
@@ -233,6 +235,8 @@ function ScheduleDetails({ isNewEvent = false }) {
       description,
       provider,
     };
+
+    console.log("newEventData for create:", newEventData);
 
     const response = await axios.post(
       API.EVENTS,
@@ -350,6 +354,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                   className="w-full px-3 py-2 font-light text-gray-900 placeholder-gray-500 border-b-2 border-gray-300 text-30 focus:outline-none focus:ring-0 focus:border-blue-500"
                   name="title"
                   value={title}
+                  aria-label="title"
                   onChange={(event) => setTitle(event.target.value)}
                 />
               </nav>
@@ -379,10 +384,12 @@ function ScheduleDetails({ isNewEvent = false }) {
                 <section className="flex items-center justify-center space-x-15">
                   <CustomDatePicker
                     initialTime={startDate}
+                    placeholder="StartDate"
                     handleDateClick={setStartDate}
                   />
                   {isAllDay ? null : (
                     <TimePicker
+                      labelForTest="startTime"
                       initialTime={startTime}
                       handleTimeClick={setStartTime}
                     />
@@ -394,10 +401,12 @@ function ScheduleDetails({ isNewEvent = false }) {
                 <section className="flex items-center justify-center space-x-15">
                   <CustomDatePicker
                     initialTime={endDate}
+                    placeholder="EndDate"
                     handleDateClick={setEndDate}
                   />
                   {isAllDay ? null : (
                     <TimePicker
+                      labelForTest="endTime"
                       initialTime={endTime}
                       handleTimeClick={setEndTime}
                     />
@@ -406,6 +415,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                 {!isAllDay && (
                   <div className="flex items-center justify-center text-sm font-thin w-290">
                     <DropDownTextMenu
+                      testIdName="timezoneInput"
                       placeholder={timezone}
                       handleOptionChange={setTimezone}
                       options={TIMEZONE_LIST}
@@ -462,6 +472,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                       className="w-full h-40 px-3 py-2 font-light text-gray-900 placeholder-gray-500 border-b-2 border-gray-300 text-1em focus:outline-none focus:ring-0 focus:border-blue-500"
                       value={place}
                       name="place"
+                      aria-label="place"
                       onChange={(event) => setPlace(event.target.value)}
                     />
                   </div>
@@ -489,6 +500,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                       return (
                         <div
                           key={attendee}
+                          data-testid="attendeeList"
                           className="flex items-center justify-start w-full text-17 space-x-25"
                         >
                           <p>{attendee}</p>

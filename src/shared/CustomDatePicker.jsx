@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import CalendarHeader from "../components/Calendar/CalendarHeader";
 import CalendarBody from "../components/Calendar/CalendarBody";
 
-function CustomDatePicker({ initialTime, handleDateClick }) {
+function CustomDatePicker({ initialTime, handleDateClick, placeholder }) {
   function getFormattedDate(date) {
     return new Date(date).toDateString().split(" ").slice(0, 4).join(" ");
   }
@@ -45,9 +45,10 @@ function CustomDatePicker({ initialTime, handleDateClick }) {
         <input
           type="text"
           className="h-40 p-10 font-light text-center border-b-2 border-gray-300 rounded-md max-w-150 form-input bg-slate-100 focus:border-blue-500 focus:ring-0"
-          placeholder="Start date"
+          placeholder={placeholder}
           value={eventDate}
           onClick={toggleCalendar}
+          readOnly
         />
       </div>
       {isCalendarOpen && (
