@@ -30,9 +30,13 @@ function AsanaPage() {
 
   useEffect(() => {
     async function fetchAsanaData() {
-      const response = await axios.post(API.TASKS.ASANA, {
-        withCredentials: true,
-      });
+      const response = await axios.post(
+        API.TASKS.ASANA,
+        {},
+        {
+          withCredentials: true,
+        },
+      );
 
       if (response.data.result === "success") {
         const { asanaUserInfo, taskList } = await response.data;
