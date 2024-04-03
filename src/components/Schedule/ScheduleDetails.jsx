@@ -196,8 +196,11 @@ function ScheduleDetails({ isNewEvent = false }) {
     const convertedNewEndDate = endDate.toLocaleDateString();
     const formattedStartDate = `${convertedNewStartDate} ${startTime}`;
     const formattedEndDate = `${convertedNewEndDate} ${endTime}`;
-    const { provider } = initialEventState;
-
+    const accountIdForNewEvent = accountId;
+    const accountEmailForNewEvent = accountInfo.find(
+      (account) => account.accountId === accountIdForNewEvent,
+    ).email;
+    const isMicrosoftAccount = accountEmailForNewEvent.includes("outlook");
     let startAt;
     let endAt;
     let formattedTimezone;
@@ -212,7 +215,7 @@ function ScheduleDetails({ isNewEvent = false }) {
       endAt = formattedEndDate;
     }
 
-    if (provider === "microsoft") {
+    if (isMicrosoftAccount) {
       const foundAltValue = TIMEZONE_LIST.find(
         (option) => option.value === timezone,
       );
@@ -233,7 +236,6 @@ function ScheduleDetails({ isNewEvent = false }) {
       timezone: formattedTimezone,
       isAllDayEvent,
       description,
-      provider,
     };
 
     console.log("newEventData for create:", newEventData);
