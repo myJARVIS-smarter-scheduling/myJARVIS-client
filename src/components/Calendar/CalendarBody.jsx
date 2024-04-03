@@ -326,6 +326,7 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
               onDoubleClick={() => handleNewEventDoubleClick(date)}
               className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden py-3 text-13 min-w-250:text-20 w-full flex flex-col justify-start items-center`}
               style={{ width: "14.2857%" }}
+              data-testid={`date-${date.getFullYear()}-${date.getMonth()}-${date.getDate() + 1}`}
             >
               <div
                 className={`w-20 h-20 relative rounded-full text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 text-white"} ${isConflictDate && isMiniCalendar && "text-white border bg-[rgba(255,18,18,0.9)]"}`}
