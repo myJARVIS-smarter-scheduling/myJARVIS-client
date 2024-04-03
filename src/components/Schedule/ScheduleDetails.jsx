@@ -201,6 +201,9 @@ function ScheduleDetails({ isNewEvent = false }) {
       (account) => account.accountId === accountIdForNewEvent,
     ).email;
     const isMicrosoftAccount = accountEmailForNewEvent.includes("outlook");
+    console.log("accountEmailForNewEvent", accountEmailForNewEvent);
+    console.log("isMicrosoftAccount", isMicrosoftAccount);
+
     let startAt;
     let endAt;
     let formattedTimezone;
