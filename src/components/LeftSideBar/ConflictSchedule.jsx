@@ -43,7 +43,6 @@ function ConflictSchedule({ conflictEvents, accountIndex }) {
     (account) => account.accountId === conflictEvents.accountId,
   );
 
-  console.log(conflictEvents, eventAccount);
   function handleOnClick() {
     const eventId = conflictEvents._id;
 
