@@ -52,7 +52,7 @@ describe("ScheduleDetails Component with isNewEvent=true", () => {
         initialEntries={[
           {
             pathname: "/events/new",
-            state: { isNewEvent: true, dateOfEvent: new Date() },
+            state: { dateOfEvent: new Date() },
           },
         ]}
       >
