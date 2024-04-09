@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Cookies } from "react-cookie";
+import { useNavigate, useLocation } from "react-router-dom";
 import { HiOutlineMenu } from "react-icons/hi";
 import { useMsal } from "@azure/msal-react";
 import axios from "axios";
@@ -35,9 +34,19 @@ function MainPage() {
   const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
     useNavbarStore();
   const [graphData, setGraphData] = useState();
-  const [isFetched, setIsFetched] = useState(false);
+  const [isFetching, setIsFetching] = useState(true);
+  const [microsoftAccounts, setMicrosoftAccounts] = useState(
+    msalInstance.getAllAccounts().length,
+  );
 
   const microsoftAccountList = msalInstance.getAllAccounts();
+
+  useEffect(() => {
+    if (microsoftAccountList.length > microsoftAccounts) {
+      setMicrosoftAccounts(microsoftAccountList.length);
+      setIsFetching(false);
+    }
+  }, [microsoftAccountList.length]);
 
   const sendAllDataToServer = async (allAccountData) => {
     try {
@@ -81,13 +90,14 @@ function MainPage() {
 
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
+
     throw new Error(
       `Failed to fetch data from ${endpoint} after ${retries} attempts`,
     );
   }
 
   useEffect(() => {
-    if (microsoftAccountList.length > 0 && !isFetched) {
+    if (microsoftAccountList.length > 0 && !isFetching) {
       const fetchAndSendData = async () => {
         const allAccountData = [];
 
@@ -134,16 +144,20 @@ function MainPage() {
       };
 
       fetchAndSendData().catch(console.error);
-      setIsFetched(true);
+      setIsFetching(true);
     }
-  }, [isFetched, microsoftAccountList]);
+  }, [microsoftAccountList, msalInstance, setMicrosoftAccounts]);
 
   useEffect(() => {
     async function fetchCalendarData() {
       try {
-        const response = await axios.post(API.CALENDAR.EVENTS, {
-          withCredentials: true,
-        });
+        const response = await axios.post(
+          API.CALENDAR.EVENTS,
+          {},
+          {
+            withCredentials: true,
+          },
+        );
 
         if (response.data.result === "success") {
           const userInfo = response.data.accountEventList;
@@ -169,7 +183,7 @@ function MainPage() {
     }
 
     fetchCalendarData();
-  }, [deleteEvent]);
+  }, [deleteEvent, setAccountInfo, graphData, setGraphData]);
 
   return (
     <main className="flex w-screen h-screen">
