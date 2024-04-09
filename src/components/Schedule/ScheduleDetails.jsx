@@ -53,7 +53,19 @@ function ScheduleDetails({ isNewEvent = false }) {
 
   const initialEventState = location.state.event || {};
   const theDateOfClick = location.state.dateOfEvent;
-  const hasEventTimezone = user.timezone !== initialEventState.timezone;
+  const formattedEventTimezone = TIMEZONE_LIST.find(
+    (option) =>
+      option.value === initialEventState.timezone ||
+      option.value === user.timezone ||
+      option.alt === user.timezone,
+  );
+
+  const formattedUserTimezone = TIMEZONE_LIST.find(
+    (option) => option.value === user.timezone || option.alt === user.timezone,
+  );
+
+  const hasEventTimezone =
+    formattedEventTimezone.value !== formattedUserTimezone.value;
   const isAllDayEvent = isAllDayEventBasedOnDuration(
     initialEventState.startAt,
     initialEventState.endAt,
@@ -87,18 +99,11 @@ function ScheduleDetails({ isNewEvent = false }) {
 
     return accountOptions;
   });
-  const labeledTimezone = TIMEZONE_LIST.filter((option) => {
-    return (
-      option.value === initialEventState.timezone ||
-      option.alt === user.timezone ||
-      option.value === user.timezone
-    );
-  });
 
   let eventStartDate = initialEventState.startAt;
   let eventEndDate = initialEventState.endAt;
-  let eventStartTime = "10:00 AM";
-  let eventEndTime = "11:00 AM";
+  let eventStartTime = initialEventState.startAt;
+  let eventEndTime = initialEventState.endAt;
 
   if (isNewEvent) {
     eventStartDate = theDateOfClick;
@@ -122,7 +127,6 @@ function ScheduleDetails({ isNewEvent = false }) {
   }
 
   const [accountId, setAccountId] = useState(accountList[0].value);
-  const [eventEmail, setEventEmail] = useState(initialEventState.email);
   const [isAllDay, setIsAllDay] = useState(isAllDayEvent);
   const [title, setTitle] = useState(isNewEvent ? "" : initialEventState.title);
   const [place, setPlace] = useState(isNewEvent ? "" : initialEventState.place);
@@ -131,22 +135,75 @@ function ScheduleDetails({ isNewEvent = false }) {
   );
   const [startDate, setStartDate] = useState(eventStartDate);
   const [endDate, setEndDate] = useState(eventEndDate);
-  const [timezone, setTimezone] = useState(
-    labeledTimezone.length === 1 && labeledTimezone[0].value
-      ? labeledTimezone[0].value
-      : initialEventState.timezone,
-  );
-  const [startTime, setStartTime] = useState(
-    hasEventTimezone ? eventStartTime : initialEventState.startAt,
-  );
-  const [endTime, setEndTime] = useState(
-    hasEventTimezone ? eventEndTime : initialEventState.endAt,
-  );
+  const [timezone, setTimezone] = useState(formattedEventTimezone.value);
+  const [startTime, setStartTime] = useState(eventStartTime);
+  const [endTime, setEndTime] = useState(eventEndTime);
   const [conflicts, setConflicts] = useState([]);
   const [hasConflictAlert, sethasConflictAlert] = useState(false);
 
   function handleAllDayEventChange(ev) {
     setIsAllDay(ev.target.checked);
+  }
+
+  async function createEvent() {
+    const convertedNewStartDate = startDate.toLocaleDateString();
+    const convertedNewEndDate = endDate.toLocaleDateString();
+    const formattedStartDate = `${convertedNewStartDate} ${startTime}`;
+    const formattedEndDate = `${convertedNewEndDate} ${endTime}`;
+    const accountIdForNewEvent = accountId;
+    const accountEmailForNewEvent = accountInfo.find(
+      (account) => account.accountId === accountIdForNewEvent,
+    ).email;
+    const isMicrosoftAccount = accountEmailForNewEvent.includes("outlook");
+
+    let startAt;
+    let endAt;
+    let formattedTimezone;
+
+    if (isAllDayEvent) {
+      startAt = startDate.toLocaleDateString();
+      endAt = endDate;
+      endAt.setDate(endAt.getDate() + 1);
+      endAt = endAt.toLocaleDateString();
+    } else {
+      startAt = formattedStartDate;
+      endAt = formattedEndDate;
+    }
+
+    if (isMicrosoftAccount) {
+      const foundAltValue = TIMEZONE_LIST.find(
+        (option) => option.value === timezone,
+      );
+
+      formattedTimezone = foundAltValue ? foundAltValue.alt : user.timezone;
+    } else {
+      formattedTimezone = timezone;
+    }
+
+    const newEventData = {
+      accountId,
+      title,
+      place,
+      startAt,
+      endAt,
+      timezone: formattedTimezone,
+      isAllDayEvent,
+      description,
+    };
+
+    const response = await axios.post(
+      API.EVENTS,
+      { newEventData },
+      { withCredentials: true },
+    );
+
+    if (response.data.result === "success") {
+      const { newEvent } = response.data;
+
+      console.log("Created Event:", newEvent);
+
+      navigate("/calendar");
+    }
   }
 
   async function updateEventData() {
@@ -176,6 +233,8 @@ function ScheduleDetails({ isNewEvent = false }) {
       provider,
     };
 
+    console.log("업데이트 이벤트 데이터:", updatedEventData);
+
     const response = await axios.patch(
       `${API.EVENTS}/${initialEventState.eventId}`,
       { updatedEventData },
@@ -186,73 +245,6 @@ function ScheduleDetails({ isNewEvent = false }) {
       const { updatedEvent } = response.data;
 
       console.log("Updated Event:", updatedEvent);
-
-      navigate("/calendar");
-    }
-  }
-
-  async function createEvent() {
-    const convertedNewStartDate = startDate.toLocaleDateString();
-    const convertedNewEndDate = endDate.toLocaleDateString();
-    const formattedStartDate = `${convertedNewStartDate} ${startTime}`;
-    const formattedEndDate = `${convertedNewEndDate} ${endTime}`;
-    const accountIdForNewEvent = accountId;
-    const accountEmailForNewEvent = accountInfo.find(
-      (account) => account.accountId === accountIdForNewEvent,
-    ).email;
-    const isMicrosoftAccount = accountEmailForNewEvent.includes("outlook");
-    console.log("accountEmailForNewEvent", accountEmailForNewEvent);
-    console.log("isMicrosoftAccount", isMicrosoftAccount);
-
-    let startAt;
-    let endAt;
-    let formattedTimezone;
-
-    if (isAllDayEvent) {
-      startAt = startDate.toLocaleDateString();
-      endAt = endDate;
-      endAt.setDate(endAt.getDate() + 1);
-      endAt = endAt.toLocaleDateString();
-    } else {
-      startAt = formattedStartDate;
-      endAt = formattedEndDate;
-    }
-
-    if (isMicrosoftAccount) {
-      const foundAltValue = TIMEZONE_LIST.find(
-        (option) => option.value === timezone,
-      );
-
-      formattedTimezone = foundAltValue ? foundAltValue.alt : user.timezone;
-      console.log("microsoft timezone", formattedTimezone);
-    } else {
-      formattedTimezone = timezone;
-      console.log("google timezone", formattedTimezone);
-    }
-
-    const newEventData = {
-      accountId,
-      title,
-      place,
-      startAt,
-      endAt,
-      timezone: formattedTimezone,
-      isAllDayEvent,
-      description,
-    };
-
-    console.log("newEventData for create:", newEventData);
-
-    const response = await axios.post(
-      API.EVENTS,
-      { newEventData },
-      { withCredentials: true },
-    );
-
-    if (response.data.result === "success") {
-      const { newEvent } = response.data;
-
-      console.log("Created Event:", newEvent);
 
       navigate("/calendar");
     }

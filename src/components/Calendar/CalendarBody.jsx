@@ -280,7 +280,7 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
               {isSelectedEvent && isToday && (
                 <div
                   ref={schedulePreviewRef}
-                  className="absolute inset-x-auto top-0 z-20 sm:top-1/2"
+                  className="absolute top-0 left-0 z-20 sm:top-1/2 sm:inset-x-auto"
                 >
                   <SchedulePreview
                     accountColor={accountColorStrong}
