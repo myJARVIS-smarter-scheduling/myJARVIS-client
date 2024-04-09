@@ -2,7 +2,6 @@ import { useState } from "react";
 import axios from "axios";
 
 import { LiaCalendarCheck } from "react-icons/lia";
-// import { AiOutlineComment } from "react-icons/ai";
 import { MdOutlineCheckCircleOutline, MdCheckCircle } from "react-icons/md";
 import { RiStackshareLine } from "react-icons/ri";
 import { RxExternalLink } from "react-icons/rx";
@@ -113,11 +112,6 @@ function AsanaBoardItem({ taskInfo, handleFetchStatus }) {
           <span className="text-sm font-light">{dueDate}</span>
         </section>
         <section className="flex space-x-15">
-          {/* TODO. 추후 comment 갯수 및 내용을 가져오는 로직을 구현합니다. */}
-          {/* <div className="flex items-center space-x-3">
-            <span>7</span>
-            <AiOutlineComment className="text-[#EE5350]" />
-          </div> */}
           <div className="flex items-center space-x-3">
             <span>{dependencies.length + dependents.length}</span>
             <RiStackshareLine className="text-[#EE5350]" />
