@@ -1,38 +1,23 @@
 import { useMsal } from "@azure/msal-react";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import { FaCrown, FaCirclePlus } from "react-icons/fa6";
-import { IoIosCheckboxOutline, IoIosCheckbox } from "react-icons/io";
 
 import API from "../../config/api";
 import { loginRequest } from "../../config/authConfig";
-import { CALENDAR_COLOR_TEXT } from "../../constant/calendar";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
 } from "../../store/account";
-import { useNavbarStore, useCalendarSelectionStore } from "../../store/navbar";
 
 function EmailConnection() {
   const { instance } = useMsal();
   const { user } = useLoginProviderStore();
   const { accounts } = useAccountEventStore();
-  const { setisRightSidebarOpen } = useNavbarStore();
-  const { selectedCalendars, addAccount, removeAccount } =
-    useCalendarSelectionStore();
-  const navigate = useNavigate();
 
   const accountEmailList = accounts
     .map((account) => account.email)
     .filter((email) => email !== user.email);
-
-  function handleCalendarClick(email) {
-    if (selectedCalendars.includes(email)) {
-      removeAccount(email);
-    } else {
-      addAccount(email);
-    }
-  }
 
   function getLogoPath(email) {
     if (email.includes("gmail")) {
@@ -48,18 +33,14 @@ function EmailConnection() {
         ...loginRequest,
         prompt: "select_account",
       })
-      .then((response) => {
-        const account = response.account[response.account.length - 1];
-
-        setisRightSidebarOpen(false);
-        navigate("/");
+      .then(() => {
+        console.log("microsoft multiple connections success");
       })
       .catch((error) => console.log(error));
   }
 
   async function handleAddAccountClick(ev) {
     ev.preventDefault();
-
     const provider = ev.currentTarget.id;
 
     if (provider === "google") {
