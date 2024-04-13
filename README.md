@@ -82,6 +82,8 @@
   - Google, Outlook을 교차하거나 여러개의 Google 또는 Outlook 계정을 연동하여 사용 가능합니다.
 - 연동된 캘린더 계정은 프로필 항목의 상단에 표시됩니다.
 
+<br>
+
 ### 일정 생성, 수정, 삭제 연동
 
 <p align="center">
