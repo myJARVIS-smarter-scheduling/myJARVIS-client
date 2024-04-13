@@ -2,8 +2,12 @@ import { create } from "zustand";
 import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
 const conflictScheduleStore = (set) => ({
-  conflictEvent: {},
-  setConflictEvent: (conflict) => set({ conflictEvent: conflict }),
+  conflictEvents: [],
+  addConflict: (newConfilct) => set(() => ({ conflictEvents: newConfilct })),
+  clearConflicts: () =>
+    set(() => ({
+      conflictEvents: [],
+    })),
 });
 
 const useConflictEventStore = create(

@@ -24,7 +24,7 @@ const biWeeklyEventListStore = (set) => ({
 
 const accountEventListStore = (set) => ({
   accounts: [],
-  conflictEvents: [],
+  // conflictEvents: [],
   connectAccount: (accountEventList) =>
     set((state) => ({
       accounts: accountEventList,
@@ -64,12 +64,12 @@ const accountEventListStore = (set) => ({
       ),
     }));
   },
-  addConflict: (newConfilct) =>
-    set((state) => ({ conflictEvents: newConfilct })),
-  clearConflicts: () =>
-    set(() => ({
-      conflictEvents: [],
-    })),
+  // addConflict: (newConfilct) =>
+  //   set((state) => ({ conflictEvents: newConfilct })),
+  // clearConflicts: () =>
+  //   set(() => ({
+  //     conflictEvents: [],
+  //   })),
 });
 
 const useLoginProviderStore = create(

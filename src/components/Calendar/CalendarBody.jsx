@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import useCurrentMonthStore from "../../store/dates";
 import { useAccountEventStore } from "../../store/account";
 import { useCalendarSelectionStore } from "../../store/navbar";
-import { useConflictEventStore } from "../../store/schedules";
+import useConflictEventStore from "../../store/schedules";
 
 import SchedulePreview from "../Schedule/SchedulePreview";
 
