@@ -7,13 +7,6 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { HiBars3BottomLeft, HiMapPin } from "react-icons/hi2";
 
-import {
-  useLoginProviderStore,
-  useBiWeeklyEventListStore,
-} from "../../store/account";
-import { useNavbarStore } from "../../store/navbar";
-import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
-
 import Header from "../../shared/Header";
 import DropdownMenu from "../../shared/DropdownMenu";
 import TimePicker from "../../shared/CustomTimePicker";
@@ -24,6 +17,16 @@ import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
 import ConflictAlert from "../LeftSideBar/ConfilctAlert";
 
+import {
+  useLoginProviderStore,
+  useBiWeeklyEventListStore,
+} from "../../store/account";
+import { useNavbarStore } from "../../store/navbar";
+import {
+  convertTimeWithTimezone,
+  isAllDayEventBasedOnDuration,
+} from "../../utils/convertDateFormat";
+
 import API from "../../config/api";
 import TIMEZONE_LIST from "../../constant/timezone";
 
@@ -33,16 +36,6 @@ const headerOptions = [
   { label: "Copy", value: "Copy" },
   { label: "Delete", value: "Delete" },
 ];
-
-function isAllDayEventBasedOnDuration(startDateInfo, endDateInfo) {
-  const start = new Date(startDateInfo);
-  const end = new Date(endDateInfo);
-  const diff = end - start;
-
-  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-  return diff === oneDayInMilliseconds;
-}
 
 function ScheduleDetails({ isNewEvent = false }) {
   const navigate = useNavigate();
@@ -59,7 +52,6 @@ function ScheduleDetails({ isNewEvent = false }) {
       option.value === user.timezone ||
       option.alt === user.timezone,
   );
-
   const formattedUserTimezone = TIMEZONE_LIST.find(
     (option) => option.value === user.timezone || option.alt === user.timezone,
   );
@@ -187,7 +179,7 @@ function ScheduleDetails({ isNewEvent = false }) {
       startAt,
       endAt,
       timezone: formattedTimezone,
-      isAllDayEvent,
+      isAllDayEvent: isAllDay,
       description,
     };
 
@@ -207,19 +199,36 @@ function ScheduleDetails({ isNewEvent = false }) {
   }
 
   async function updateEventData() {
-    const convertedUpdateStartDate = new Date(startDate).toLocaleDateString();
-    const convertedUpdateEndDate = new Date(endDate).toLocaleDateString();
-    const formattedStartDate = `${convertedUpdateStartDate} ${startTime}`;
-    const formattedEndDate = `${convertedUpdateEndDate} ${endTime}`;
+    const convertedUpdateStartDate = new Date(startDate)
+      .toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", "");
+    const convertedUpdateEndDate = new Date(endDate)
+      .toLocaleDateString("en-US", {
+        month: "numeric",
+        day: "numeric",
+        year: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: true,
+      })
+      .replace(",", "");
+
     const { provider } = initialEventState;
 
     const startAt = isAllDayEvent
       ? startDate.setHours(0, 0, 0, 0)
-      : formattedStartDate;
+      : convertedUpdateStartDate;
 
     const endAt = isAllDayEvent
       ? endDate.setDate(endDate.getDate() + 1).setHours(0, 0, 0, 0)
-      : formattedEndDate;
+      : convertedUpdateEndDate;
 
     const updatedEventData = {
       dataId: initialEventState._id,
@@ -228,12 +237,10 @@ function ScheduleDetails({ isNewEvent = false }) {
       startAt,
       endAt,
       timezone,
-      isAllDayEvent,
+      isAllDayEvent: isAllDay,
       description,
       provider,
     };
-
-    console.log("업데이트 이벤트 데이터:", updatedEventData);
 
     const response = await axios.patch(
       `${API.EVENTS}/${initialEventState.eventId}`,
@@ -275,13 +282,19 @@ function ScheduleDetails({ isNewEvent = false }) {
     let endHours;
     let endMinutes;
 
-    if (typeof startTime === "string" && typeof endTime === "string") {
+    if (typeof startTime === "string") {
       [startHours, startMinutes] = startTime.endsWith("AM")
         ? startTime.replace(" AM", "").split(":").map(Number)
         : startTime
             .replace(" PM", "")
             .split(":")
             .map((num) => (num === "12" ? 12 : Number(num) + 12));
+    } else {
+      startHours = startTime.getHours();
+      startMinutes = startTime.getMinutes();
+    }
+
+    if (typeof endTime === "string") {
       [endHours, endMinutes] = endTime.endsWith("AM")
         ? endTime.replace(" AM", "").split(":").map(Number)
         : endTime
@@ -289,8 +302,6 @@ function ScheduleDetails({ isNewEvent = false }) {
             .split(":")
             .map((num) => (num === "12" ? 12 : Number(num) + 12));
     } else {
-      startHours = startTime.getHours();
-      startMinutes = startTime.getMinutes();
       endHours = endTime.getHours();
       endMinutes = endTime.getMinutes();
     }
@@ -364,7 +375,6 @@ function ScheduleDetails({ isNewEvent = false }) {
                   <p>Save</p>
                 </button>
                 <div className="text-1em w-170">
-                  {/* TODO. 기본 기능 (추가/삭제/수정) 구현 후 바로 작업합니다. */}
                   <DropdownMenu
                     options={headerOptions}
                     placeholder={placeholder}
@@ -431,7 +441,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                     type="checkbox"
                     checked={isAllDay ? "checked" : ""}
                     className="w-17 h-17"
-                    onChange={handleAllDayEventChange}
+                    onChange={(event) => handleAllDayEventChange(event)}
                   />
                   <p className="text-17 text-slate-800">All day event</p>
                 </label>

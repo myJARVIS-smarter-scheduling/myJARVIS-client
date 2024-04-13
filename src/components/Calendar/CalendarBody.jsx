@@ -5,9 +5,11 @@ import { useNavigate } from "react-router-dom";
 import useCurrentMonthStore from "../../store/dates";
 import { useAccountEventStore } from "../../store/account";
 import { useCalendarSelectionStore } from "../../store/navbar";
+import { useConflictEventStore } from "../../store/schedules";
 
 import SchedulePreview from "../Schedule/SchedulePreview";
 
+import { isAllDayEventBasedOnDuration } from "../../utils/convertDateFormat";
 import {
   CALENDAR_DAYS,
   MINI_CALENDAR_DAYS,
@@ -20,7 +22,8 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
   const navigate = useNavigate();
   const [selectedEvent, setSelectedEvent] = useState(null);
   const schedulePreviewRef = useRef();
-  const { accounts, conflictEvents } = useAccountEventStore();
+  const { accounts } = useAccountEventStore();
+  const { conflictEvents } = useConflictEventStore();
   const { currentMonth } = useCurrentMonthStore();
   const { selectedCalendars } = useCalendarSelectionStore();
 
@@ -85,6 +88,10 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     event.stopPropagation();
 
     setSelectedEvent(null);
+  }
+
+  function handleNewEventDoubleClick(dateOfEvent) {
+    navigate("/events/new", { state: { dateOfEvent } });
   }
 
   function getCalendarDates(thisMonth) {
@@ -166,16 +173,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     );
   }
 
-  function isAllDayEventBasedOnDuration(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-
-    const diff = end - start;
-    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-    return diff === oneDayInMilliseconds;
-  }
-
   function renderEventsForDate(date, accountList) {
     const allEvents = accountList.flatMap((account, accountIndex) =>
       account.events.map((event) => ({
@@ -228,25 +225,19 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
 
     sortedEvents
       .map((event) => {
+        const accountBorderColor = CALENDAR_BORDER_COLORS[event.accountIndex];
+        const accountColorLight = CALENDAR_COLORS_LIGHT[event.accountIndex];
+        const accountColorStrong = CALENDAR_COLORS_STRONG[event.accountIndex];
+
         const eventStartDate = new Date(event.startAt);
         const eventEndDate = new Date(event.endAt);
-
-        const isAllDayEvent = isAllDayEventBasedOnDuration(
-          event.startAt,
-          event.endAt,
-        );
-        const isMultiDayEvent =
-          eventEndDate.getTime() - eventStartDate.getTime() >
-          24 * 60 * 60 * 1000;
+        const isAllDayEvent = event.isAllDay;
+        const isMultiDayEvent = event.isMultiDay;
         const isToday = isSameDay(eventStartDate, date);
         const isEventInCurrentDay =
           new Date(eventStartDate) < endOfDay &&
           new Date(eventEndDate) > startOfDay;
         const isStartDayMatch = isSameDay(eventStartDate, date);
-
-        const accountBorderColor = CALENDAR_BORDER_COLORS[event.accountIndex];
-        const accountColorLight = CALENDAR_COLORS_LIGHT[event.accountIndex];
-        const accountColorStrong = CALENDAR_COLORS_STRONG[event.accountIndex];
 
         const isSelectedEvent =
           selectedEvent && selectedEvent._id === event._id;
@@ -300,10 +291,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
     return renderedSections;
   }
 
-  function handleNewEventDoubleClick(dateOfEvent) {
-    navigate("/events/new", { state: { dateOfEvent } });
-  }
-
   function renderWeek(week) {
     const overlappingDates = getConflictEventsDate(conflictEvents);
 
@@ -320,8 +307,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
 
           return (
             <div
-              //TODO. onClick 이벤트에는 팝업을 통해 간단하게 만들 수 있는 기능을 구현합니다.
-              // onClick={() => handleEventDateChange(date)}
               key={dateKey}
               onDoubleClick={() => handleNewEventDoubleClick(date)}
               className={`${!isMiniCalendar && "border border-slate-50"} overflow-hidden py-3 text-13 min-w-250:text-20 w-full flex flex-col justify-start items-center`}
