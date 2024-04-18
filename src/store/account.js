@@ -14,8 +14,7 @@ const loginProviderStore = (set) => ({
 const biWeeklyEventListStore = (set) => ({
   biWeeklyEvents: [],
 
-  addBiWeeklyEvents: (newEvents) =>
-    set((state) => ({ biWeeklyEvents: newEvents })),
+  addBiWeeklyEvents: (newEvents) => set(() => ({ biWeeklyEvents: newEvents })),
   clearBiWeeklyEvents: () =>
     set(() => ({
       biWeeklyEvents: [],
@@ -24,9 +23,8 @@ const biWeeklyEventListStore = (set) => ({
 
 const accountEventListStore = (set) => ({
   accounts: [],
-  // conflictEvents: [],
   connectAccount: (accountEventList) =>
-    set((state) => ({
+    set(() => ({
       accounts: accountEventList,
     })),
   addEvent: (accountIds, newEvent) => {
@@ -64,12 +62,6 @@ const accountEventListStore = (set) => ({
       ),
     }));
   },
-  // addConflict: (newConfilct) =>
-  //   set((state) => ({ conflictEvents: newConfilct })),
-  // clearConflicts: () =>
-  //   set(() => ({
-  //     conflictEvents: [],
-  //   })),
 });
 
 const useLoginProviderStore = create(

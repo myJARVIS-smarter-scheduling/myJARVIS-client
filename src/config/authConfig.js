@@ -9,7 +9,6 @@ export const msalConfig = {
     clientCapabilities: ["CP1"],
     navigateToLoginRequestUrl: false,
   },
-
   cache: {
     cacheLocation: "sessionStorage",
     storeAuthStateInCookie: false,

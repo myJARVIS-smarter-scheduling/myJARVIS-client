@@ -1,8 +1,7 @@
 import { MdChevronLeft, MdOutlineChevronRight } from "react-icons/md";
 
 import useCurrentMonthStore from "../../store/dates";
-import DropdownMenu from "../../shared/DropdownMenu";
-import { CALENDAR_MONTHS, CALENDAR_VIEW } from "../../constant/calendar";
+import { CALENDAR_MONTHS } from "../../constant/calendar";
 
 function CalendarHeader({ isDatePicker = false }) {
   const { currentMonth, setCurrentMonth } = useCurrentMonthStore();
@@ -59,7 +58,6 @@ function CalendarHeader({ isDatePicker = false }) {
           </p>
         </section>
       </section>
-      {/* <DropdownMenu options={CALENDAR_VIEW} /> */}
     </header>
   );
 }

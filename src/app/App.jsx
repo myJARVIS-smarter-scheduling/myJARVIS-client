@@ -12,7 +12,6 @@ function Pages() {
   const { instance } = useMsal();
   const isAuthenticated = useIsAuthenticated();
   const [isLogin, setIsLogin] = useState(false);
-  // const activeAccount = instance.getActiveAccount();
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -36,12 +35,6 @@ function Pages() {
       })
       .catch((error) => console.log(error));
   }
-
-  // TODO: 로그아웃을 구현합니다.
-  // function handleLogout() {
-  //   instance.logout();
-  //   setIsLogin(false);
-  // }
 
   return (
     <main className="box-border overflow-hidden font-sans">

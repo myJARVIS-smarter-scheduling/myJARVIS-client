@@ -1,8 +1,9 @@
 /* eslint-disable */
 import { useEffect, useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
-import { HiOutlineMenu } from "react-icons/hi";
+import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 import { useMsal } from "@azure/msal-react";
+import { HiOutlineMenu } from "react-icons/hi";
 import axios from "axios";
 
 import {
@@ -13,7 +14,6 @@ import { useNavbarStore } from "../../store/navbar";
 
 import Header from "../../shared/Header";
 import Logo from "../../shared/Logo";
-import DropdownMenu from "../../shared/DropdownMenu";
 import CalendarHeader from "../Calendar/CalendarHeader";
 import Calendar from "../Calendar/Calendar";
 import LeftSideBar from "../LeftSideBar/LeftSideBar";
@@ -21,34 +21,29 @@ import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
 
 import API from "../../config/api";
-import { CALENDAR_VIEW } from "../../constant/calendar";
 import fetchData from "../../config/graphFetch";
 import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken";
-import { protectedResources } from "../../config/authConfig";
+import { protectedResources, loginRequest } from "../../config/authConfig";
 
 function MainPage() {
-  const { instance: msalInstance } = useMsal();
   const navigate = useNavigate();
+  const { instance: msalInstance } = useMsal();
   const { deleteEvent, connectAccount } = useAccountEventStore();
-  const { setUser, setAccountInfo } = useLoginProviderStore();
+  const { setUser, setAccountInfo, accountInfo, user } =
+    useLoginProviderStore();
   const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
     useNavbarStore();
   const [graphData, setGraphData] = useState();
-  const [isFetching, setIsFetching] = useState(true);
-  const [microsoftAccounts, setMicrosoftAccounts] = useState(
-    msalInstance.getAllAccounts().length,
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "userId",
+    "accessToken",
+  ]);
+  const microsoftAccountList = msalInstance.getAllAccounts();
+  const connectedMicrosoftAccounts = accountInfo.filter((account) =>
+    account.email.includes("outlook"),
   );
 
-  const microsoftAccountList = msalInstance.getAllAccounts();
-
-  useEffect(() => {
-    if (microsoftAccountList.length > microsoftAccounts) {
-      setMicrosoftAccounts(microsoftAccountList.length);
-      setIsFetching(false);
-    }
-  }, [microsoftAccountList.length]);
-
-  const sendAllDataToServer = async (allAccountData) => {
+  async function sendAllDataToServer(allAccountData) {
     try {
       const response = await axios.post(
         API.CALENDAR.OUTLOOK,
@@ -59,7 +54,7 @@ function MainPage() {
       );
 
       if (response.data.result === "success") {
-        const userInfo = response.data.accountEventList;
+        const userInfo = response.data.user;
         const accountInfoList = userInfo.map((account) => {
           return {
             accountId: account.accountId,
@@ -69,7 +64,7 @@ function MainPage() {
         });
 
         if (response.data.user) {
-          setUser(response.data.user);
+          setUser(userInfo);
         }
 
         setAccountInfo(accountInfoList);
@@ -79,7 +74,7 @@ function MainPage() {
     } catch (error) {
       console.error("Error sending data to server:", error);
     }
-  };
+  }
 
   async function fetchDataWithRetry(endpoint, accessToken, retries = 3) {
     for (let i = 0; i < retries; i += 1) {
@@ -96,8 +91,32 @@ function MainPage() {
     );
   }
 
+  async function requestReLogin(email, instance) {
+    instance
+      .loginRedirect({
+        ...loginRequest,
+        loginHint: email,
+      })
+      .catch((error) => console.log(error));
+  }
+
+  function handleLogout() {
+    if (user.provider === "microsoft") {
+      removeCookie("userId");
+      removeCookie("accessToken");
+
+      navigate("/");
+    } else {
+      const response = axios.post(API.LOGOUT, {}, { withCredentials: true });
+
+      if (response.message === "success") {
+        navigate("/");
+      }
+    }
+  }
+
   useEffect(() => {
-    if (microsoftAccountList.length > 0 && !isFetching) {
+    if (microsoftAccountList.length > 0) {
       const fetchAndSendData = async () => {
         const allAccountData = [];
 
@@ -106,6 +125,17 @@ function MainPage() {
             msalInstance,
             account,
           );
+
+          if (
+            account === microsoftAccountList[0] &&
+            user.provider === "microsoft"
+          ) {
+            const currentAccessToken = cookies.accessToken;
+
+            if (accessToken !== currentAccessToken) {
+              setCookie("accessToken", accessToken, { path: "/" });
+            }
+          }
 
           try {
             const userInfo = await fetchDataWithRetry(
@@ -144,9 +174,8 @@ function MainPage() {
       };
 
       fetchAndSendData().catch(console.error);
-      setIsFetching(true);
     }
-  }, [microsoftAccountList, msalInstance, setMicrosoftAccounts]);
+  }, [microsoftAccountList.length]);
 
   useEffect(() => {
     async function fetchCalendarData() {
@@ -160,18 +189,21 @@ function MainPage() {
         );
 
         if (response.data.result === "success") {
-          const userInfo = response.data.accountEventList;
-          const accountInfoList = userInfo.map((account) => {
-            return {
-              accountId: account.accountId,
-              provider: account.provider,
-              email: account.email,
-            };
-          });
+          const userInfo = response.data.user;
+          const accountEvents = response.data.accountEventList;
+          const accountInfoList = response.data.accountEventList.map(
+            (account) => {
+              return {
+                accountId: account.accountId,
+                provider: account.provider,
+                email: account.email,
+              };
+            },
+          );
 
-          setUser(response.data.user);
+          setUser(userInfo);
           setAccountInfo(accountInfoList);
-          connectAccount(userInfo);
+          connectAccount(accountEvents);
         }
 
         if (response.data.result === "fail") {
@@ -183,28 +215,44 @@ function MainPage() {
     }
 
     fetchCalendarData();
-  }, [deleteEvent, setAccountInfo, graphData, setGraphData]);
+  }, [deleteEvent, setAccountInfo, setGraphData]);
+
+  useEffect(() => {
+    if (connectedMicrosoftAccounts.length !== microsoftAccountList.length) {
+      connectedMicrosoftAccounts.forEach(async (account) => {
+        const msalAccount = microsoftAccountList.find(
+          (msalLogined) => msalLogined.username === account.email,
+        );
+
+        if (!msalAccount) {
+          requestReLogin(account.email, msalInstance);
+        }
+      });
+    }
+  }, [msalInstance]);
 
   return (
     <main className="flex w-screen h-screen">
       <div className="flex flex-col items-center w-full h-full overflow-hidden">
         <Header>
-          <section className="flex items-center justify-between w-full h-full border-b p-15">
-            <div className="flex items-center space-x-110">
-              <div className="flex items-center space-x-10">
-                <div className="flex items-center justify-center w-40 h-40 rounded-full cursor-pointer hover:bg-slate-100">
-                  <HiOutlineMenu
-                    size={30}
-                    onClick={() => setisLeftSidebarOpen(!isLeftSidebarOpen)}
-                  />
-                </div>
-                <Logo />
+          <section className="flex items-center w-full h-full py-10 border-b px-15">
+            <div className="flex items-center space-x-10">
+              <div className="flex items-center justify-center w-40 h-40 rounded-full cursor-pointer hover:bg-slate-100">
+                <HiOutlineMenu
+                  size={30}
+                  onClick={() => setisLeftSidebarOpen(!isLeftSidebarOpen)}
+                />
               </div>
-              <CalendarHeader />
+              <Logo />
             </div>
-            <div>
-              <DropdownMenu options={CALENDAR_VIEW} />
-            </div>
+            <CalendarHeader />
+            <button
+              type="button"
+              className="text-sm font-light border border-b-2 rounded w-70 h-30 text-slate-700"
+              onClick={handleLogout}
+            >
+              Logout
+            </button>
           </section>
         </Header>
         <div className="flex w-full h-full">
