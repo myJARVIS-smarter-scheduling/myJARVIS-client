@@ -1,8 +1,10 @@
 import { InteractionRequiredAuthError } from "@azure/msal-browser";
+import { useCookies } from "react-cookie";
+import { loginRequest } from "../../config/authConfig";
 
 async function getAccessTokenForAccount(msalInstance, account) {
   const silentRequest = {
-    scopes: ["User.Read", "Calendars.ReadWrite", "MailboxSettings.Read"],
+    ...loginRequest,
     account,
   };
 

@@ -1,16 +1,30 @@
+import axios from "axios";
 import { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 import LoginForm from "./LoginForm";
 import IntroBox from "./IntroBox";
 
 import { useLoginProviderStore } from "../../store/account";
+import API from "../../config/api";
 
 function LoginPage({ onClickOutlookLogin, handleLoginStatus }) {
-  const { setProvider, setUser } = useLoginProviderStore();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    setProvider("");
-    setUser("");
+    async function checkLoginStatus() {
+      const response = await axios.get(API.LOGIN_STATUS, {
+        withCredentials: true,
+      });
+
+      console.log("response", response);
+
+      if (response.data.message === "success") {
+        navigate("/calendar");
+      }
+    }
+
+    checkLoginStatus();
   }, []);
 
   return (
