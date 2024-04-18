@@ -15,7 +15,6 @@ const viewOptions = [
 ];
 
 function UserSettings() {
-  // const { user } = useLoginProviderStore();
   const { accounts } = useAccountEventStore();
   const { selectedCalendars, addAccount, removeAccount } =
     useCalendarSelectionStore();
@@ -38,15 +37,6 @@ function UserSettings() {
           <DropdownMenu options={viewOptions} />
         </div>
       </nav>
-      {/* TODO: 추후 advanced로 구현합니다. */}
-      {/* <nav className="w-full h-150">
-        <p className="flex mb-10 font-light text-center text-20">
-          Select Timezone
-        </p>
-        <div className="w-250">
-          <DropdownMenu options={timezone} />
-        </div>
-      </nav> */}
       <aside className="w-full space-y-20 mt-50 min-h-200">
         <p className="flex mb-10 font-light text-center text-20">
           Select Calendars

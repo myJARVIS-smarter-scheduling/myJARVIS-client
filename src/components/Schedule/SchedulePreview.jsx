@@ -65,7 +65,7 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
   async function handleDeleteButtonClick(event) {
     const accountData = {
       accountId: event.accountId,
-      provider,
+      // provider,
     };
 
     const response = await axios.delete(`${API.EVENTS}/${event._id}`, {
