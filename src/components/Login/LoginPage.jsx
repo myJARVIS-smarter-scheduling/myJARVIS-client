@@ -1,30 +1,21 @@
 import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useCookies } from "react-cookie";
 
 import LoginForm from "./LoginForm";
 import IntroBox from "./IntroBox";
 
-import { useLoginProviderStore } from "../../store/account";
 import API from "../../config/api";
 
 function LoginPage({ onClickOutlookLogin, handleLoginStatus }) {
   const navigate = useNavigate();
+  const [cookies] = useCookies(["userId", "accessToken"]);
 
   useEffect(() => {
-    async function checkLoginStatus() {
-      const response = await axios.get(API.LOGIN_STATUS, {
-        withCredentials: true,
-      });
-
-      console.log("response", response);
-
-      if (response.data.message === "success") {
-        navigate("/calendar");
-      }
+    if (cookies.userId && cookies.accessToken) {
+      navigate("/calendar");
     }
-
-    checkLoginStatus();
   }, []);
 
   return (
