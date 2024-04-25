@@ -4,7 +4,7 @@ import {
   useAccountEventStore,
   useBiWeeklyEventListStore,
 } from "../../store/account";
-import useConflictEventStore from "../../store/schedules";
+import { useConflictEventStore } from "../../store/schedules";
 import ConflictSchedule from "./ConflictSchedule";
 
 function findConflicts(accounts) {
@@ -73,6 +73,7 @@ function ConflictList() {
       account.events.filter((event) => {
         const start = new Date(event.startAt);
         const end = new Date(event.endAt);
+
         return start < lastDayOfBiweekly && end >= firstDayOfWeek;
       }),
     );

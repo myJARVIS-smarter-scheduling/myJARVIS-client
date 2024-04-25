@@ -5,16 +5,11 @@ import { MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
 
 import CalendarBody from "../Calendar/CalendarBody";
 import ConflictList from "./ConflictList";
-// import AsanaNewTask from "../RightSideBar/Asana/AsanaNewTask";
 
-const selectOptions = [
-  { label: "Event", value: "calendar" },
-  // { label: "Asana Task", value: "asana" },
-];
+const selectOptions = [{ label: "Event", value: "calendar" }];
 
 function LeftSideBar() {
   const [isOpen, setIsOpen] = useState(false);
-  // const [isClicked, setIsClicked] = useState(false);
   const dropdownRef = useRef();
   const navigate = useNavigate();
 

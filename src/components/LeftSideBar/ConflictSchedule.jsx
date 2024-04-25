@@ -4,10 +4,8 @@ import { HiPencilSquare } from "react-icons/hi2";
 import { IoLocationOutline } from "react-icons/io5";
 import { PiUsersThree } from "react-icons/pi";
 
-import {
-  formatDateWithoutYear,
-  isAllDayEventBasedOnDuration,
-} from "../../utils/convertDateFormat";
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar";
+import { formatDateWithoutYear } from "../../utils/convertDateFormat";
 
 import { useLoginProviderStore } from "../../store/account";
 import { CALENDAR_BORDER_COLORS } from "../../constant/calendar";

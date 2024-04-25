@@ -22,13 +22,3 @@ export const formatDateWithoutYear = (date) => {
 
   return `${datePart[1]} ${datePart[2]}`;
 };
-
-export const isAllDayEventBasedOnDuration = (startDate, endDate) => {
-  const start = new Date(startDate);
-  const end = new Date(endDate);
-
-  const diff = end - start;
-  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-  return diff === oneDayInMilliseconds;
-};

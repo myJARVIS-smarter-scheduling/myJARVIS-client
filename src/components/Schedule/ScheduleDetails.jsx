@@ -22,10 +22,8 @@ import {
   useBiWeeklyEventListStore,
 } from "../../store/account";
 import { useNavbarStore } from "../../store/navbar";
-import {
-  convertTimeWithTimezone,
-  isAllDayEventBasedOnDuration,
-} from "../../utils/convertDateFormat";
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar";
+import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
 
 import API from "../../config/api";
 import TIMEZONE_LIST from "../../constant/timezone";
