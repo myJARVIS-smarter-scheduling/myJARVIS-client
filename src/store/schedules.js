@@ -10,6 +10,14 @@ const conflictScheduleStore = (set) => ({
     })),
 });
 
+const selectedEventStore = (set) => ({
+  selectedEvent: null,
+
+  setSelectedEvent: (event) => set(() => ({ selectedEvent: event })),
+  clearSelectedEvent: () => set(() => ({ selectedEvent: null })),
+});
+
+const useSelectedEventStore = create(devtools(selectedEventStore));
 const useConflictEventStore = create(
   devtools(
     persist(conflictScheduleStore, {
@@ -19,4 +27,4 @@ const useConflictEventStore = create(
   ),
 );
 
-export default useConflictEventStore;
+export { useConflictEventStore, useSelectedEventStore };
