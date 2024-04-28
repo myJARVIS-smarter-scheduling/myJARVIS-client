@@ -251,13 +251,13 @@ header와 body의 분리의 경우, 재사용성 외에도 UI/UX 측면을 고�
 
 이를 해결하기 위해 Compound Component(합성 컴포넌트) 패턴을 사용하여 각 컴포넌트들과 비즈니스 로직을 분리함으로써 관심사를 분리하고 SRP를 따르는 설계를 할 수 있었습니다.
 
+<p align="center">
+  <img width="500" alt="CalendarBody 상세" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/assets/133668286/1c3e766d-f917-4a82-a335-de23870b19e8">
+</p>
+
 하위 컴포넌트의 경우 주(Week)를 렌더링하는 CalendarWeek, 요일(Day)을 렌더링하는 CalendarDay, 그리고 이벤트를 렌더링하는 CalendarEvent로 나누고 이를 CalendarBody(최상위 컴포넌트)내에서 사용했습니다. 이때, 캘린더의 일을 계산하고 시간을 계산하는 로직들과 이벤트와 관련된 비즈니스 로직 역시 별도로 모두 각각 분리하여 필요시에만 사용했습니다.
 
 또한 커스텀훅(useCalendarSettings)을 별도로 생성하여 isMiniCalendar의 값에 따라 변경되는 캘린더의 설정값들을 관리하여 최상위 컴포넌트에서 props로 각 하위 컴포넌트에 전달하였습니다. 커스텀훅에서는 useMemo를 활용하고, isMiniCalendar의 값에 따라 변경되는 각 설정값들을 캐싱하여 불필요한 렌더링을 줄이고자 했습니다.
-
-<p align="center">
-  <img width="600" alt="CalendarBody 상세" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/assets/133668286/1c3e766d-f917-4a82-a335-de23870b19e8">
-</p>
 
 <br>
 
