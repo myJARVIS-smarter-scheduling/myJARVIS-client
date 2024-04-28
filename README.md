@@ -219,37 +219,44 @@ myJARVIS에서는 현재 날짜의 주차에 충돌된 일정이 있을 시 (1)�
 
 이번에 myJARVIS 서비스를 구현하며 라이브러리 없이 Date 객체를 다뤄보게 되었습니다. 라이브러리를 사용하지 않고 Date 객체를 다뤘던 만큼 캘린더 컴포넌트의 구현과 timezone 변환 기능을 직접 구현해보았습니다.
 
-### 2-1. 커스텀 캘린더 컴포넌트 구현을 통한 재사용성 증가
+### 2-1. Compound Component 패턴을 사용한 캘린더 컴포넌트 재사용성 증가
 
 기존의 캘린더 라이브러리의 경우 Date 객체를 다루는 라이브러리가 dependency에 포함되어 있거나 구현이 되어있는 상태였습니다.
 
-그 외에도 달력 컴포넌트에 이벤트를 렌더링하는 과정이 필요했기에 자연스럽게 캘린더 컴포넌트를 직접 구현하게 되었고, 그 과정에서 **컴포넌트의 분리 및 props** 활용을 통해 재사용성을 높였습니다.
+그 외에도 달력 컴포넌트에 이벤트를 렌더링하는 과정이 필요했기에 자연스럽게 캘린더 컴포넌트를 직접 구현하게 되었고, 그 과정에서 **Compound Component 패턴(합성컴포넌트)** 으로 관심사 분리를 통해 재사용성을 높였습니다. 그 이유와 과정에 대해 아래에서 자세히 살펴보겠습니다.
 
 <p align="center">
-  <img width="500px" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-server/assets/133668286/17463a19-9128-4102-969e-e2a2a01aab61">
+ <img width="1000" alt="calendar compound component pattern" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/assets/133668286/80f76fa2-501c-4796-847a-ac6aa9d75152">
 </p>
 
 ### header와 body의 분리
 
 header와 body의 분리의 경우, 재사용성 외에도 UI/UX 측면을 고려하여 컴포넌트를 분리하게 되었습니다. 캘린더 헤더에는 오늘 날짜와 함께 월 단위로 캘린더를 변경할 수 있는 버튼이 존재합니다. 이때 UX를 고려해 해당 버튼 외에도 TODAY 버튼을 클릭하면 바로 오늘 날짜로 돌아올 수 있는 기능을 추가했습니다.
 
-하지만 이벤트 생성/수정시에는 메인 페이지에 비해 TODAY 버튼의 필요성이 낮다고 생각되었고, UI 측면에서도 깔끔함을 유지하기 위해 메인페이지의 헤더에만 TODAY 버튼을 렌더링할 수 있도록 props를 통해 캘린더 헤더를 재사용했습니다.
+하지만 이벤트 생성/수정시에는 메인 페이지에 비해 TODAY 버튼의 필요성이 낮다고 생각되었고, UI 측면에서도 깔끔함을 유지하기 위해 메인페이지의 헤더에만 TODAY 버튼을 렌더링할 수 있도록 헤더를 분리하여 재사옹했습니다.
 
 <p align="center">
   <img width="500px" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-server/assets/133668286/9021035a-442e-4885-a719-65008d472563">
 </p>
 
-### props에 따른 캘린더 body
+### body컴포넌트의 분리
 
-캘린더 body의 경우 props를 통해 콘텐츠를 동적으로 변경함으로써 재사용성을 높였습니다.
-
-캘린더 body는 크게 미니캘린더, 메인캘린더 타입으로 나누었습니다. 이때 props로 isMiniCalendar를 받고, 해당 props의 값에 따라 아래 내용들이 동적으로 변경됩니다.
-
-- 요일의 표기
-- 충돌 이벤트의 표시
+캘린더 body의 경우, 메인 캘린더에서는 각 계정들의 이벤트를 렌더링하고 사이드바의 미니 캘린더에서는 이벤트의 충돌이 있을 경우 이를 렌더링해야 했습니다. 그 외에도 날짜를 계산하는 로직, 충돌을 계산하는 로직 등 다양한 비즈니스 로직들과 주/요일을 렌더링하는 여러 로직들이 필요했습니다.
 
 <p align="center">
   <img width="500px" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-server/assets/133668286/5871cf91-9e38-4076-beb7-c7cd87bf20c7">
+</p>
+
+그렇기 때문에 CalendarBody라는 컴포넌트가 완성이 되었을 때, 너무 많은 로직들이 하나의 컴포넌트에 존재하게 되며 코드는 길어지고 가독성은 떨어졌습니다. 뿐만 아니라, 하나의 컴포넌트에서 너무 많은 책임을 지고 있었기에 디버깅시에도 모든 코드를 살펴보아야 했습니다. 이는 리액트에서 권장하는 단일 책임 원칙(Single Responsibility Priniciple)에도 맞지 않았습니다.
+
+이를 해결하기 위해 Compound Component(합성 컴포넌트) 패턴을 사용하여 각 컴포넌트들과 비즈니스 로직을 분리함으로써 관심사를 분리하고 SRP를 따르는 설계를 할 수 있었습니다.
+
+하위 컴포넌트의 경우 주(Week)를 렌더링하는 CalendarWeek, 요일(Day)을 렌더링하는 CalendarDay, 그리고 이벤트를 렌더링하는 CalendarEvent로 나누고 이를 CalendarBody(최상위 컴포넌트)내에서 사용했습니다. 이때, 캘린더의 일을 계산하고 시간을 계산하는 로직들과 이벤트와 관련된 비즈니스 로직 역시 별도로 모두 각각 분리하여 필요시에만 사용했습니다.
+
+또한 커스텀훅(useCalendarSettings)을 별도로 생성하여 isMiniCalendar의 값에 따라 변경되는 캘린더의 설정값들을 관리하여 최상위 컴포넌트에서 props로 각 하위 컴포넌트에 전달하였습니다. 커스텀훅에서는 useMemo를 활용하고, isMiniCalendar의 값에 따라 변경되는 각 설정값들을 캐싱하여 불필요한 렌더링을 줄이고자 했습니다.
+
+<p align="center">
+  <img width="600" alt="CalendarBody 상세" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/assets/133668286/1c3e766d-f917-4a82-a335-de23870b19e8">
 </p>
 
 <br>
