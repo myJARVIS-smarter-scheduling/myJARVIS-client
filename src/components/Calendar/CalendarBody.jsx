@@ -15,7 +15,6 @@ import {
 } from "../../utils/handleCalendar";
 
 function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
-  console.log("isMiniCalendar Body", isMiniCalendar);
   const { clearSelectedEvent } = useSelectedEventStore();
   const { currentMonth } = useCurrentMonthStore();
   const schedulePreviewRef = useRef();

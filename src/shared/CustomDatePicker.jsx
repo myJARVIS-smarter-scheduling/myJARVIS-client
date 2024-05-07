@@ -20,7 +20,6 @@ function CustomDatePicker({ initialTime, handleDateClick, placeholder }) {
     const formattedDate = getFormattedDate(selectedDate);
 
     seteventDate(formattedDate);
-    console.log("selectedDate", selectedDate);
     handleDateClick(selectedDate);
     toggleCalendar();
   }
