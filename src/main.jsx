@@ -2,12 +2,14 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { msalConfig } from "./config/authConfig";
 
 import App from "./app/App";
 import "./index.css";
 
 const msalInstance = new PublicClientApplication(msalConfig);
+const queryClient = new QueryClient();
 
 if (
   !msalInstance.getActiveAccount() &&
@@ -34,6 +36,8 @@ const router = createBrowserRouter([
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>
-    <RouterProvider router={router} />
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
   </React.StrictMode>,
 );

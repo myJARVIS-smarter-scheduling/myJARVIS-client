@@ -48,16 +48,11 @@ const accountEventListStore = (set) => ({
       ),
     }));
   },
-  updateEvent: (accountIds, updatedEvent) => {
+  updateEvent: (accountId, updatedEvents) => {
     set((state) => ({
       accounts: state.accounts.map((account) =>
-        accountIds.includes(account.accountId)
-          ? {
-              ...account,
-              events: account.events.map((event) =>
-                event._id === updatedEvent._id ? updatedEvent : event,
-              ),
-            }
+        account.accountId === accountId
+          ? { ...account, events: updatedEvents }
           : account,
       ),
     }));

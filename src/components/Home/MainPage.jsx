@@ -19,16 +19,17 @@ import Calendar from "../Calendar/Calendar";
 import LeftSideBar from "../LeftSideBar/LeftSideBar";
 import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
+import EventFetching from "./EventFetching";
 
 import API from "../../config/api";
-import fetchData from "../../config/graphFetch";
+import fetchData from "../../utils/graphFetch";
 import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken";
 import { protectedResources, loginRequest } from "../../config/authConfig";
 
 function MainPage() {
   const navigate = useNavigate();
   const { instance: msalInstance } = useMsal();
-  const { deleteEvent, connectAccount } = useAccountEventStore();
+  const { deleteEvent, connectAccount, account } = useAccountEventStore();
   const { setUser, setAccountInfo, accountInfo, user } =
     useLoginProviderStore();
   const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
@@ -55,21 +56,25 @@ function MainPage() {
 
       if (response.data.result === "success") {
         const userInfo = response.data.user;
-        const accountInfoList = userInfo.map((account) => {
-          return {
-            accountId: account.accountId,
-            provider: account.provider,
-            email: account.email,
-          };
-        });
+        const accountEvents = response.data.accountEventList;
+        const accountInfoList = response.data.accountEventList.map(
+          (account) => {
+            return {
+              accountId: account.accountId,
+              accessToken: account.accessToken,
+              provider: account.provider,
+              email: account.email,
+            };
+          },
+        );
 
         if (response.data.user) {
           setUser(userInfo);
         }
 
         setAccountInfo(accountInfoList);
-        setGraphData(accountInfoList);
-        connectAccount(userInfo);
+        setGraphData(accountEvents);
+        connectAccount(accountEvents);
       }
     } catch (error) {
       console.error("Error sending data to server:", error);
@@ -195,6 +200,7 @@ function MainPage() {
             (account) => {
               return {
                 accountId: account.accountId,
+                accessToken: account.accessToken,
                 provider: account.provider,
                 email: account.email,
               };
@@ -215,7 +221,7 @@ function MainPage() {
     }
 
     fetchCalendarData();
-  }, [deleteEvent, setAccountInfo, setGraphData]);
+  }, [deleteEvent, account, setAccountInfo, setGraphData]);
 
   useEffect(() => {
     if (connectedMicrosoftAccounts.length !== microsoftAccountList.length) {
@@ -264,6 +270,7 @@ function MainPage() {
         </div>
       </div>
       {isRightSidebarOpen && <RightSideBarItems />}
+      <EventFetching />
     </main>
   );
 }

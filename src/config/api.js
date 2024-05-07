@@ -15,6 +15,7 @@ const API = {
     EVENTS: `${SERVER_URL}/calendar/events`,
   },
   EVENTS: `${SERVER_URL}/events`,
+  SYNC: `${SERVER_URL}/events/fetch`,
   TASKS: {
     ASANA: `${SERVER_URL}/tasks`,
   },
