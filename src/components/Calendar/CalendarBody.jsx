@@ -1,12 +1,9 @@
 /* eslint-disable */
-import { useRef, useEffect } from "react";
-
 import useCalendarSettings from "../../hooks/useCalendarSettings";
 
 import CalendarDay from "./CalendarDay";
 import CalendarWeek from "./CalendarWeek";
 
-import { useSelectedEventStore } from "../../store/schedules";
 import useCurrentMonthStore from "../../store/dates";
 
 import {
@@ -15,28 +12,9 @@ import {
 } from "../../utils/handleCalendar";
 
 function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
-  const { clearSelectedEvent } = useSelectedEventStore();
   const { currentMonth } = useCurrentMonthStore();
-  const schedulePreviewRef = useRef();
   const { dayLabels, cellBorderClass, conflictClass } =
     useCalendarSettings(isMiniCalendar);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (
-        schedulePreviewRef.current &&
-        !schedulePreviewRef.current.contains(event.target)
-      ) {
-        clearSelectedEvent();
-      }
-    }
-
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
 
   const calendarDates = getCalendarDates(currentMonth);
   const calendarWeeks = buildCalendarWeeks(calendarDates);
@@ -57,7 +35,6 @@ function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
               week={week}
               cellBorderClass={cellBorderClass}
               conflictClass={conflictClass}
-              schedulePreviewRef={schedulePreviewRef}
               handleEventDateChange={handleEventDateChange}
               isMiniCalendar={isMiniCalendar}
             />

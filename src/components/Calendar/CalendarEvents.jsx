@@ -1,3 +1,4 @@
+import { useRef, useEffect } from "react";
 import SchedulePreview from "../Schedule/SchedulePreview";
 
 import { useAccountEventStore } from "../../store/account";
@@ -13,11 +14,13 @@ import {
   CALENDAR_COLORS_LIGHT,
 } from "../../constant/calendar";
 
-function CalendarEvents(date, schedulePreviewRef) {
+function CalendarEvents(date) {
+  const schedulePreviewRef = useRef();
   const currentDate = date.date;
   const { accounts } = useAccountEventStore();
   const { selectedCalendars } = useCalendarSelectionStore();
-  const { selectedEvent, setSelectedEvent } = useSelectedEventStore;
+  const { selectedEvent, setSelectedEvent, clearSelectedEvent } =
+    useSelectedEventStore();
   const allEvents = getAllEvents(accounts);
   const sortedEvents = sortEvents(allEvents);
   const renderedSections = [];
@@ -32,14 +35,32 @@ function CalendarEvents(date, schedulePreviewRef) {
     currentDate.getDate() + 1,
   );
 
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        schedulePreviewRef.current &&
+        !schedulePreviewRef.current.contains(event.target)
+      ) {
+        clearSelectedEvent();
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   function handleEventClick(event) {
+    console.log(event);
     setSelectedEvent(event);
   }
 
   function handleEventClose(event) {
     event.stopPropagation();
 
-    setSelectedEvent(null);
+    clearSelectedEvent();
   }
 
   sortedEvents
@@ -93,6 +114,7 @@ function CalendarEvents(date, schedulePreviewRef) {
                 <SchedulePreview
                   accountColor={accountColorStrong}
                   eventInfo={selectedEvent}
+                  ref={schedulePreviewRef}
                   handleCloseButtonClick={handleEventClose}
                 />
               </div>

@@ -10,7 +10,6 @@ import { getConflictEventsOfDate } from "../../utils/handleCalendarEvents";
 function CalendarWeek({
   week,
   handleEventDateChange,
-  schedulePreviewRef,
   cellBorderClass,
   conflictClass,
   isMiniCalendar,
@@ -50,12 +49,7 @@ function CalendarWeek({
               {date.getDate()}
             </button>
             <div className="w-full">
-              {!isMiniCalendar && (
-                <CalendarEvents
-                  date={date}
-                  schedulePreviewRef={schedulePreviewRef}
-                />
-              )}
+              {!isMiniCalendar && <CalendarEvents date={date} />}
             </div>
           </div>
         );

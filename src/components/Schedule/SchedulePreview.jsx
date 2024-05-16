@@ -20,7 +20,6 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
 
   const navigate = useNavigate();
   const { deleteEvent } = useAccountEventStore();
-  const { provider } = useLoginProviderStore();
   const { title, attendees } = eventInfo;
   const eventStartDate = new Date(eventInfo.startAt);
   const eventEndDate = new Date(eventInfo.endAt);
@@ -65,7 +64,6 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
   async function handleDeleteButtonClick(event) {
     const accountData = {
       accountId: event.accountId,
-      // provider,
     };
 
     const response = await axios.delete(`${API.EVENTS}/${event._id}`, {
@@ -119,7 +117,7 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
           <button
             type="button"
             aria-label="close Button"
-            onClick={(event) => handleCloseButtonClick(event)}
+            onClick={handleCloseButtonClick}
             className="flex items-center justify-center rounded-full hover:bg-slate-700 hover:text-white bg-slate-100 w-30 h-30"
           >
             <IoClose size={22} className="cursor-pointer" />
