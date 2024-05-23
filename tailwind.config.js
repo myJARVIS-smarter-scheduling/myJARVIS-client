@@ -6,7 +6,7 @@ const px600 = { ...Array.from(Array(601)).map((_, i) => `${i}px`) };
 const px800 = { ...Array.from(Array(801)).map((_, i) => `${i}px`) };
 
 export default {
-  content: ["./index.html", "./src/**/*.{js,jsx}"],
+  content: ["./index.html", "./src/**/*.{js,jsx,tsx,ts}"],
   theme: {
     extend: {
       fontSize: px50,

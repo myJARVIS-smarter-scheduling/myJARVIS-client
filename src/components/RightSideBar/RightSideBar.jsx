@@ -1,23 +1,23 @@
 import { FaUserCircle } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 
-import { useNavbarStore } from "../../store/navbar";
+import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
 
 function RightSideBar() {
   const {
     isRightSidebarOpen,
-    setisRightSidebarOpen,
+    setIsRightSidebarOpen,
     navbarItem,
-    setNavbarItems,
+    setNavbarItem,
   } = useNavbarStore();
 
   function handleIconClick(itemType) {
     if (navbarItem === itemType) {
-      setisRightSidebarOpen(false);
-      setNavbarItems("");
+      setIsRightSidebarOpen(false);
+      setNavbarItem("");
     } else {
-      setisRightSidebarOpen(true);
-      setNavbarItems(itemType);
+      setIsRightSidebarOpen(true);
+      setNavbarItem(itemType);
     }
   }
 

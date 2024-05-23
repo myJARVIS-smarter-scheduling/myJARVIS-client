@@ -2,10 +2,10 @@ import { useNavigate } from "react-router-dom";
 
 import CalendarEvents from "./CalendarEvents";
 
-import useCurrentMonthStore from "../../store/dates";
-import { useConflictEventStore } from "../../store/schedules";
+import useCurrentMonthStore from "../../store/TypeScript/dates.ts";
+import { useConflictEventStore } from "../../store/TypeScript/schedules.ts";
 
-import { getConflictEventsOfDate } from "../../utils/handleCalendarEvents";
+import { getConflictEventsOfDate } from "../../utils/handleCalendarEvents.ts";
 
 function CalendarWeek({
   week,

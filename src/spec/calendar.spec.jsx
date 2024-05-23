@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import CalendarBody from "../components/Calendar/CalendarBody";
-import { CALENDAR_DAYS, MINI_CALENDAR_DAYS } from "../constant/calendar";
+import { CALENDAR_DAYS, MINI_CALENDAR_DAYS } from "../constant/calendar.ts";
 
 const mockAccounts = [
   {

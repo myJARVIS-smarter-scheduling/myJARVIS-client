@@ -9,30 +9,33 @@ import axios from "axios";
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/account";
-import { useNavbarStore } from "../../store/navbar";
+} from "../../store/TypeScript/account.ts";
+import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
 
-import Header from "../../shared/Header";
-import Logo from "../../shared/Logo";
+import Header from "../../shared/Header.tsx";
+import Logo from "../../shared/Logo.tsx";
 import CalendarHeader from "../Calendar/CalendarHeader";
 import Calendar from "../Calendar/Calendar";
 import LeftSideBar from "../LeftSideBar/LeftSideBar";
 import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
-import EventFetching from "./EventFetching";
+import EventFetching from "./TypeScript/EventFetching.tsx";
 
-import API from "../../config/api";
-import fetchData from "../../utils/graphFetch";
-import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken";
-import { protectedResources, loginRequest } from "../../config/authConfig";
+import API from "../../config/api.ts";
+import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken.ts";
+import {
+  fetchDataWithRetry,
+  sendAllDataToServer,
+} from "../../utils/handleData.ts";
+import { protectedResources, loginRequest } from "../../config/authConfig.ts";
 
 function MainPage() {
   const navigate = useNavigate();
   const { instance: msalInstance } = useMsal();
-  const { deleteEvent, connectAccount, account } = useAccountEventStore();
+  const { deleteEvent, connectAccount, accounts } = useAccountEventStore();
   const { setUser, setAccountInfo, accountInfo, user } =
     useLoginProviderStore();
-  const { isRightSidebarOpen, isLeftSidebarOpen, setisLeftSidebarOpen } =
+  const { isRightSidebarOpen, isLeftSidebarOpen, setIsLeftSidebarOpen } =
     useNavbarStore();
   const [graphData, setGraphData] = useState();
   const [cookies, setCookie, removeCookie] = useCookies([
@@ -43,58 +46,6 @@ function MainPage() {
   const connectedMicrosoftAccounts = accountInfo.filter((account) =>
     account.email.includes("outlook"),
   );
-
-  async function sendAllDataToServer(allAccountData) {
-    try {
-      const response = await axios.post(
-        API.CALENDAR.OUTLOOK,
-        {
-          accountsData: allAccountData,
-        },
-        { withCredentials: true },
-      );
-
-      if (response.data.result === "success") {
-        const userInfo = response.data.user;
-        const accountEvents = response.data.accountEventList;
-        const accountInfoList = response.data.accountEventList.map(
-          (account) => {
-            return {
-              accountId: account.accountId,
-              accessToken: account.accessToken,
-              provider: account.provider,
-              email: account.email,
-            };
-          },
-        );
-
-        if (response.data.user) {
-          setUser(userInfo);
-        }
-
-        setAccountInfo(accountInfoList);
-        setGraphData(accountEvents);
-        connectAccount(accountEvents);
-      }
-    } catch (error) {
-      console.error("Error sending data to server:", error);
-    }
-  }
-
-  async function fetchDataWithRetry(endpoint, accessToken, retries = 3) {
-    for (let i = 0; i < retries; i += 1) {
-      const result = await fetchData(endpoint, accessToken);
-      if (result !== undefined) {
-        return result;
-      }
-
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-    }
-
-    throw new Error(
-      `Failed to fetch data from ${endpoint} after ${retries} attempts`,
-    );
-  }
 
   async function requestReLogin(email, instance) {
     instance
@@ -172,7 +123,13 @@ function MainPage() {
         }
 
         if (allAccountData.length > 0) {
-          await sendAllDataToServer(allAccountData);
+          await sendAllDataToServer(
+            allAccountData,
+            setGraphData,
+            connectAccount,
+            setUser,
+            setAccountInfo,
+          );
         } else {
           console.log("Failed to fetch valid data.");
         }
@@ -221,7 +178,7 @@ function MainPage() {
     }
 
     fetchCalendarData();
-  }, [deleteEvent, account, setAccountInfo, setGraphData]);
+  }, [deleteEvent, accounts, setAccountInfo, setGraphData]);
 
   useEffect(() => {
     if (connectedMicrosoftAccounts.length !== microsoftAccountList.length) {
@@ -246,7 +203,7 @@ function MainPage() {
               <div className="flex items-center justify-center w-40 h-40 rounded-full cursor-pointer hover:bg-slate-100">
                 <HiOutlineMenu
                   size={30}
-                  onClick={() => setisLeftSidebarOpen(!isLeftSidebarOpen)}
+                  onClick={() => setIsLeftSidebarOpen(!isLeftSidebarOpen)}
                 />
               </div>
               <Logo />

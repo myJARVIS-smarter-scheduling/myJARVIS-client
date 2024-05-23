@@ -1,6 +1,6 @@
-import { formatDateWithoutYear } from "../../utils/convertDateFormat";
+import { formatDateWithoutYear } from "../../utils/convertDateFormat.ts";
 
-function ConflictAlertContent({ conflictEvent, handleAlertPopUp }) {
+function ConflictAlertContent({ conflictEvent }) {
   const { title } = conflictEvent;
   const startDate = new Date(conflictEvent.startAt);
   const endDate = new Date(conflictEvent.endAt);

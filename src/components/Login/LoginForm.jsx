@@ -1,6 +1,4 @@
-import { useLoginProviderStore } from "../../store/account";
-
-import API from "../../config/api";
+import API from "../../config/api.ts";
 
 function LoginForm({ onClickOutlookLogin, handleLoginStatus }) {
   async function handleGoogleButtonClick(ev) {

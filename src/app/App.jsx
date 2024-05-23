@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 
 import { useMsal, MsalProvider, useIsAuthenticated } from "@azure/msal-react";
-import { loginRequest } from "../config/authConfig";
+import { loginRequest } from "../config/authConfig.ts";
 
 import LoginPage from "../components/Login/LoginPage";
 import MainPage from "../components/Home/MainPage";

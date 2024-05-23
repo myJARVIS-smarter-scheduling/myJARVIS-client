@@ -1,13 +1,14 @@
+import { useState } from "react";
 import { IoIosCheckboxOutline, IoIosCheckbox } from "react-icons/io";
 
-import DropdownMenu from "../../shared/DropdownMenu";
+import DropdownMenu from "../../shared/DropdownMenu.tsx";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/account";
-import { useCalendarSelectionStore } from "../../store/navbar";
-import { CALENDAR_COLOR_TEXT } from "../../constant/calendar";
+} from "../../store/TypeScript/account.ts";
+import { useCalendarSelectionStore } from "../../store/TypeScript/navbar.ts";
+import { CALENDAR_COLOR_TEXT } from "../../constant/calendar.ts";
 
 const viewOptions = [
   { label: "all-in-one", value: "all-in-one" },
@@ -15,6 +16,7 @@ const viewOptions = [
 ];
 
 function UserSettings() {
+  const [view, setView] = useState(viewOptions[0].value);
   const { accounts } = useAccountEventStore();
   const { selectedCalendars, addAccount, removeAccount } =
     useCalendarSelectionStore();
@@ -34,7 +36,7 @@ function UserSettings() {
           Calendar View
         </p>
         <div className="w-150">
-          <DropdownMenu options={viewOptions} />
+          <DropdownMenu options={viewOptions} handleOptionChange={setView} />
         </div>
       </nav>
       <aside className="w-full space-y-20 mt-50 min-h-200">

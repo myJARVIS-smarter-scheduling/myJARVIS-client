@@ -3,8 +3,8 @@ import {
   useLoginProviderStore,
   useAccountEventStore,
   useBiWeeklyEventListStore,
-} from "../../store/account";
-import { useConflictEventStore } from "../../store/schedules";
+} from "../../store/TypeScript/account.ts";
+import { useConflictEventStore } from "../../store/TypeScript/schedules.ts";
 import ConflictSchedule from "./ConflictSchedule";
 
 function findConflicts(accounts) {

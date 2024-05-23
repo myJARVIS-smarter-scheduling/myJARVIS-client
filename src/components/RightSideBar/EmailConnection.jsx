@@ -1,13 +1,13 @@
 import { useMsal } from "@azure/msal-react";
 import { FaCrown, FaCirclePlus } from "react-icons/fa6";
 
-import API from "../../config/api";
-import { loginRequest } from "../../config/authConfig";
+import API from "../../config/api.ts";
+import { loginRequest } from "../../config/authConfig.ts";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/account";
+} from "../../store/TypeScript/account.ts";
 
 function EmailConnection() {
   const { instance } = useMsal();

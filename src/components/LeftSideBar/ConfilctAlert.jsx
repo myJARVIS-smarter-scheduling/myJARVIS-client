@@ -1,7 +1,7 @@
 import { AiFillExclamationCircle } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 
-import { useLoginProviderStore } from "../../store/account";
+import { useLoginProviderStore } from "../../store/TypeScript/account.ts";
 
 import ConflictAlertContent from "./ConflictAlertContent";
 

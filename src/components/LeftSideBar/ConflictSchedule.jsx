@@ -4,11 +4,11 @@ import { HiPencilSquare } from "react-icons/hi2";
 import { IoLocationOutline } from "react-icons/io5";
 import { PiUsersThree } from "react-icons/pi";
 
-import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar";
-import { formatDateWithoutYear } from "../../utils/convertDateFormat";
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar.ts";
+import { formatDateWithoutYear } from "../../utils/convertDateFormat.ts";
 
-import { useLoginProviderStore } from "../../store/account";
-import { CALENDAR_BORDER_COLORS } from "../../constant/calendar";
+import { useLoginProviderStore } from "../../store/TypeScript/account.ts";
+import { CALENDAR_BORDER_COLORS } from "../../constant/calendar.ts";
 
 function ConflictSchedule({ conflictEvents, accountIndex }) {
   const navigate = useNavigate();

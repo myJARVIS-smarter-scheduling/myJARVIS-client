@@ -1,15 +1,15 @@
 /* eslint-disable */
-import useCalendarSettings from "../../hooks/useCalendarSettings";
+import useCalendarSettings from "../../hooks/useCalendarSettings.tsx";
 
 import CalendarDay from "./CalendarDay";
 import CalendarWeek from "./CalendarWeek";
 
-import useCurrentMonthStore from "../../store/dates";
+import useCurrentMonthStore from "../../store/TypeScript/dates.ts";
 
 import {
   getCalendarDates,
   buildCalendarWeeks,
-} from "../../utils/handleCalendar";
+} from "../../utils/handleCalendar.ts";
 
 function CalendarBody({ isMiniCalendar = false, handleEventDateChange }) {
   const { currentMonth } = useCurrentMonthStore();

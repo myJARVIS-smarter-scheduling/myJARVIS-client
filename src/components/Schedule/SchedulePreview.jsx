@@ -5,13 +5,10 @@ import { FiTrash2 } from "react-icons/fi";
 import { IoClose, IoArchiveSharp } from "react-icons/io5";
 import { LuPencil } from "react-icons/lu";
 import { HiMiniUsers, HiMapPin } from "react-icons/hi2";
-import {
-  useLoginProviderStore,
-  useAccountEventStore,
-} from "../../store/account";
+import { useAccountEventStore } from "../../store/TypeScript/account.ts";
 
-import { CALENDAR_DAYS } from "../../constant/calendar";
-import API from "../../config/api";
+import { CALENDAR_DAYS } from "../../constant/calendar.ts";
+import API from "../../config/api.ts";
 
 function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
   if (!eventInfo) {

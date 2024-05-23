@@ -3,7 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { PublicClientApplication, EventType } from "@azure/msal-browser";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { msalConfig } from "./config/authConfig";
+import { msalConfig } from "./config/authConfig.ts";
 
 import App from "./app/App";
 import "./index.css";

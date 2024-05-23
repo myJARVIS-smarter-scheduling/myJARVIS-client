@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 
 import RightSideBarItems from "../components/RightSideBar/RightSideBarItems";
 
-import { useNavbarStore } from "../store/navbar";
+import { useNavbarStore } from "../store/TypeScript/navbar.ts";
 
 const mockUserInfo = { email: "user@gmail.com", timezone: "Asia/Seoul" };
 const mockAccountInfo = [
@@ -77,8 +77,8 @@ describe("RightSideBar Component", () => {
   it("should render EmailConnection component when navbarItem is profile", async () => {
     vi.mocked(useNavbarStore).mockImplementation(() => ({
       navbarItem: "profile",
-      setisRightSidebarOpen: vi.fn(),
-      setNavbarItems: vi.fn(),
+      setIsRightSidebarOpen: vi.fn(),
+      setNavbarItem: vi.fn(),
     }));
 
     render(
@@ -94,8 +94,8 @@ describe("RightSideBar Component", () => {
   it("should render UserSettings component when navbarItem is settings", async () => {
     vi.mocked(useNavbarStore).mockImplementation(() => ({
       navbarItem: "settings",
-      setisRightSidebarOpen: vi.fn(),
-      setNavbarItems: vi.fn(),
+      setIsRightSidebarOpen: vi.fn(),
+      setNavbarItem: vi.fn(),
     }));
 
     render(
@@ -111,8 +111,8 @@ describe("RightSideBar Component", () => {
   it("should render AsanaLogin component when navbarItem is asana and there is no login info", async () => {
     vi.mocked(useNavbarStore).mockImplementation(() => ({
       navbarItem: "asana",
-      setisRightSidebarOpen: vi.fn(),
-      setNavbarItems: vi.fn(),
+      setIsRightSidebarOpen: vi.fn(),
+      setNavbarItem: vi.fn(),
     }));
 
     render(

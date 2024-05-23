@@ -6,8 +6,6 @@ import { useCookies } from "react-cookie";
 import LoginForm from "./LoginForm";
 import IntroBox from "./IntroBox";
 
-import API from "../../config/api";
-
 function LoginPage({ onClickOutlookLogin, handleLoginStatus }) {
   const navigate = useNavigate();
   const [cookies] = useCookies(["userId", "accessToken"]);

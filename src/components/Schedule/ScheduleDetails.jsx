@@ -7,12 +7,12 @@ import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { HiBars3BottomLeft, HiMapPin } from "react-icons/hi2";
 
-import Header from "../../shared/Header";
-import DropdownMenu from "../../shared/DropdownMenu";
-import TimePicker from "../../shared/CustomTimePicker";
-import TextEditor from "../../shared/TextEditor";
+import Header from "../../shared/Header.tsx";
+import DropdownMenu from "../../shared/DropdownMenu.tsx";
+import TimePicker from "../../shared/CustomTimePicker.tsx";
+import TextEditor from "../../shared/TextEditor.tsx";
 import CustomDatePicker from "../../shared/CustomDatePicker";
-import DropDownTextMenu from "../../shared/DropdownTextMenu";
+import DropDownTextMenu from "../../shared/DropdownTextMenu.tsx";
 import RightSideBar from "../RightSideBar/RightSideBar";
 import RightSideBarItems from "../RightSideBar/RightSideBarItems";
 import ConflictAlert from "../LeftSideBar/ConfilctAlert";
@@ -20,13 +20,13 @@ import ConflictAlert from "../LeftSideBar/ConfilctAlert";
 import {
   useLoginProviderStore,
   useBiWeeklyEventListStore,
-} from "../../store/account";
-import { useNavbarStore } from "../../store/navbar";
-import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar";
-import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
+} from "../../store/TypeScript/account.ts";
+import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar.ts";
+import { convertTimeWithTimezone } from "../../utils/convertDateFormat.ts";
 
-import API from "../../config/api";
-import TIMEZONE_LIST from "../../constant/timezone";
+import API from "../../config/api.ts";
+import TIMEZONE_LIST from "../../constant/timezone.ts";
 
 const placeholder = "More actions";
 const headerOptions = [
@@ -373,10 +373,10 @@ function ScheduleDetails({ isNewEvent = false }) {
                   <p>Save</p>
                 </button>
                 <div className="text-1em w-170">
-                  <DropdownMenu
+                  {/* <DropdownMenu
                     options={headerOptions}
                     placeholder={placeholder}
-                  />
+                  /> */}
                 </div>
               </nav>
             </div>

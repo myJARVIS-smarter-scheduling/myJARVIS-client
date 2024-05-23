@@ -1,7 +1,7 @@
 import { MdChevronLeft, MdOutlineChevronRight } from "react-icons/md";
 
-import useCurrentMonthStore from "../../store/dates";
-import { CALENDAR_MONTHS } from "../../constant/calendar";
+import useCurrentMonthStore from "../../store/TypeScript/dates.ts";
+import { CALENDAR_MONTHS } from "../../constant/calendar.ts";
 
 function CalendarHeader({ isDatePicker = false }) {
   const { currentMonth, setCurrentMonth } = useCurrentMonthStore();

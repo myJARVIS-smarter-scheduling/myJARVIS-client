@@ -1,18 +1,18 @@
 import { useRef, useEffect } from "react";
 import SchedulePreview from "../Schedule/SchedulePreview";
 
-import { useAccountEventStore } from "../../store/account";
-import { useSelectedEventStore } from "../../store/schedules";
-import { useCalendarSelectionStore } from "../../store/navbar";
+import { useAccountEventStore } from "../../store/TypeScript/account.ts";
+import { useSelectedEventStore } from "../../store/TypeScript/schedules.ts";
+import { useCalendarSelectionStore } from "../../store/TypeScript/navbar.ts";
 
-import { isSameDay } from "../../utils/handleCalendar";
-import { sortEvents, getAllEvents } from "../../utils/handleCalendarEvents";
+import { isSameDay } from "../../utils/handleCalendar.ts";
+import { sortEvents, getAllEvents } from "../../utils/handleCalendarEvents.ts";
 
 import {
   CALENDAR_BORDER_COLORS,
   CALENDAR_COLORS_STRONG,
   CALENDAR_COLORS_LIGHT,
-} from "../../constant/calendar";
+} from "../../constant/calendar.ts";
 
 function CalendarEvents(date) {
   const schedulePreviewRef = useRef();
