@@ -226,7 +226,7 @@ myJARVIS에서는 현재 날짜의 주차에 충돌된 일정이 있을 시 (1)�
 
 기존의 캘린더 라이브러리의 경우 Date 객체를 다루는 라이브러리가 dependency에 포함되어 있거나 구현이 되어있는 상태였습니다.
 
-그 외에도 달력 컴포넌트에 이벤트를 렌더링하는 과정이 필요했기에 자연스럽게 캘린더 컴포넌트를 직접 구현하게 되었고, 그 과정에서 **Compound Component 패턴(합성컴포넌트)** 으로 관심사 분리를 통해 재사용성을 높였습니다. 그 이유와 과정에 대해 아래에서 자세히 살펴보겠습니다.
+그 외에도 달력 컴포넌트에 이벤트를 렌더링하는 과정이 필요했기에 자연스럽게 캘린더 컴포넌트를 직접 구현하게 되었고, 그 과정에서 **[Compound Component 패턴(합성컴포넌트)** 으로 관심사 분리를 통해 재사용성을 높였습니다.](https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/tree/main/src/components/Calendar) 그 이유와 과정에 대해 아래에서 자세히 살펴보겠습니다.
 
 <p align="center">
  <img width="1000" alt="calendar compound component pattern" src="https://github.com/myJARVIS-smarter-scheduling/myJARVIS-client/assets/133668286/80f76fa2-501c-4796-847a-ac6aa9d75152">
@@ -295,6 +295,8 @@ header와 body의 분리의 경우, 재사용성 외에도 UI/UX 측면을 고�
 myJARVIS에서 이벤트를 생성,수정,삭제할 경우 해당 캘린더에 대한 이벤트 정보는 각 캘린더와 실시간 연동되어 해당 캘린더에 반영됩니다.
 
 하지만, myJARVIS에서 변경한 내용이 해당 캘린더에 반영되는 것 뿐만 아니라, 연동된 캘린더에서의 반영사항을 myJARVIS에도 반영하여 데이터의 최신 상태를 유지해주고 싶었습니다.
+
+<br>
 
 ### 3-1. webhook을 활용한 데이터 관리
 
