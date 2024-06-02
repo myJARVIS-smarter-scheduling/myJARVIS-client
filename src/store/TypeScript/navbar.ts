@@ -8,6 +8,7 @@ interface NavbarOpenStatusState {
   setIsRightSidebarOpen: (isRightSidebarOpen: boolean) => void;
   setIsLeftSidebarOpen: (isLeftSidebarOpen: boolean) => void;
   setNavbarItem: (navbarItem: string) => void;
+  clearNavbarItem(): void;
 }
 
 interface CalendarSelectionState {
@@ -27,11 +28,12 @@ const useNavbarStore = create<NavbarOpenStatusState>()(
       (set) => ({
         isLeftSidebarOpen: false,
         isRightSidebarOpen: false,
-        navbarItem: "", // null이 초기값인데 빈 값도 되는지 확인필요
+        navbarItem: undefined, // null이 초기값인데 빈 값도 되는지 확인필요
         setIsRightSidebarOpen: (isRightSidebarOpen) =>
           set({ isRightSidebarOpen }),
         setIsLeftSidebarOpen: (isLeftSidebarOpen) => set({ isLeftSidebarOpen }),
         setNavbarItem: (navbarItem) => set({ navbarItem }),
+        clearNavbarItem: () => set({ navbarItem: undefined }),
       }),
       {
         name: "navbar",

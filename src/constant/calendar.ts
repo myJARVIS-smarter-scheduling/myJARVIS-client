@@ -1,4 +1,4 @@
-export const CALENDAR_COLOR_TEXT = [
+export const CALENDAR_COLOR_TEXT: string[] = [
   "text-red-500",
   "text-orange-500",
   "text-yellow-500",
@@ -8,7 +8,7 @@ export const CALENDAR_COLOR_TEXT = [
   "text-purple-500",
 ];
 
-export const CALENDAR_BORDER_COLORS = [
+export const CALENDAR_BORDER_COLORS: string[] = [
   "border-red-500",
   "border-orange-500",
   "border-yellow-500",
@@ -18,7 +18,7 @@ export const CALENDAR_BORDER_COLORS = [
   "border-purple-500",
 ];
 
-export const CALENDAR_COLORS_STRONG = [
+export const CALENDAR_COLORS_STRONG: string[] = [
   "bg-red-500",
   "bg-orange-500",
   "bg-yellow-500",
@@ -28,7 +28,7 @@ export const CALENDAR_COLORS_STRONG = [
   "bg-purple-500",
 ];
 
-export const CALENDAR_COLORS_LIGHT = [
+export const CALENDAR_COLORS_LIGHT: string[] = [
   "bg-red-50",
   "bg-orange-50",
   "bg-yellow-50",
@@ -38,7 +38,7 @@ export const CALENDAR_COLORS_LIGHT = [
   "bg-purple-50",
 ];
 
-export const CALENDAR_MONTHS = [
+export const CALENDAR_MONTHS: string[] = [
   "January",
   "February",
   "March",
@@ -53,11 +53,14 @@ export const CALENDAR_MONTHS = [
   "December",
 ];
 
-export const CALENDAR_DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-
-export const MINI_CALENDAR_DAYS = ["S", "M", "T", "W", "T", "F", "S"];
-
-export const CALENDAR_VIEW = [
-  { label: "Monthly", value: "Monthly" },
-  { label: "Weekly", value: "Weekly" },
+export const CALENDAR_DAYS: string[] = [
+  "Sun",
+  "Mon",
+  "Tue",
+  "Wed",
+  "Thu",
+  "Fri",
+  "Sat",
 ];
+
+export const MINI_CALENDAR_DAYS: string[] = ["S", "M", "T", "W", "T", "F", "S"];

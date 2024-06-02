@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
-import { EventData, CalendarEvent, Schedule } from "../../types/events";
+import { CalendarEvent, Schedule } from "../../types/events";
 
 interface ConflictScheduleState {
   conflictEvents: Schedule[];

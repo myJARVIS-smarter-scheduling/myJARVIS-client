@@ -1,5 +1,5 @@
 import { isAllDayEventBasedOnDuration } from "./handleCalendar";
-import { Account } from "../types/account";
+import { Account, AccountInfo } from "../types/account";
 import { CalendarEvent, Schedule, EventData } from "../types/events";
 
 export const sortEvents = (allEvents: CalendarEvent[]) =>
@@ -31,12 +31,80 @@ export const sortEvents = (allEvents: CalendarEvent[]) =>
     return startAtA - startAtB;
   });
 
+export const sortConflicts = (
+  conflictList: EventData[],
+  accountInfo: AccountInfo[],
+): EventData[] => {
+  return conflictList.sort((a, b) => {
+    const dateOfA = new Date(a.startAt);
+    const dateOfB = new Date(b.startAt);
+
+    const dateStringA = `${dateOfA.getFullYear()}/${dateOfA.getMonth() + 1}/${dateOfA.getDate()}`;
+    const dateStringB = `${dateOfB.getFullYear()}/${dateOfB.getMonth() + 1}/${dateOfB.getDate()}`;
+
+    if (dateStringA < dateStringB) return -1;
+    if (dateStringA > dateStringB) return 1;
+
+    const indexOfA = accountInfo.findIndex(
+      (account) => account.accountId === a.accountId,
+    );
+    const indexOfB = accountInfo.findIndex(
+      (account) => account.accountId === b.accountId,
+    );
+
+    return indexOfA - indexOfB;
+  });
+};
+
+export const findConflicts = (accounts: Account[]): Schedule[] => {
+  const allEvents = accounts.flatMap((account) =>
+    account.events.map((event) => ({
+      ...event,
+      accountId: account.accountId,
+    })),
+  );
+
+  const conflicts: Schedule[] = [];
+
+  for (let i = 0; i < allEvents.length; i += 1) {
+    for (let j = i + 1; j < allEvents.length; j += 1) {
+      const eventA = allEvents[i];
+      const eventB = allEvents[j];
+
+      if (
+        new Date(eventA.startAt) <= new Date(eventB.endAt) &&
+        new Date(eventB.startAt) <= new Date(eventA.endAt)
+      ) {
+        const conflictExists = conflicts.some((conflict) =>
+          conflict.events.find(
+            (event) =>
+              (event._id === eventA._id || event._id === eventB._id) &&
+              ((event.startAt === eventA.startAt &&
+                event.endAt === eventA.endAt) ||
+                (event.startAt === eventB.startAt &&
+                  event.endAt === eventB.endAt)),
+          ),
+        );
+
+        if (!conflictExists) {
+          conflicts.push({
+            accounts: [eventA.accountId, eventB.accountId].filter(
+              (value, index, self) => self.indexOf(value) === index,
+            ),
+            events: [eventA, eventB],
+          });
+        }
+      }
+    }
+  }
+
+  return conflicts;
+};
+
 export const getAllEvents = (accountList: Account[]) => {
   const allEvents: CalendarEvent[] = accountList.flatMap(
     (account, accountIndex) =>
       account.events.map((eventInfo: EventData) => {
-        // 명시적으로 unknown으로 변환한 후 EventData 타입으로 캐스팅, 질문하기
-        // const eventInfo: EventData = event as unknown as EventData;
         const startAt = new Date(eventInfo.startAt);
         const endAt = new Date(eventInfo.endAt);
 
