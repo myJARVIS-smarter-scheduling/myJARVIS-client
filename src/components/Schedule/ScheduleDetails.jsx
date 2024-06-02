@@ -13,9 +13,9 @@ import TimePicker from "../../shared/CustomTimePicker.tsx";
 import TextEditor from "../../shared/TextEditor.tsx";
 import CustomDatePicker from "../../shared/CustomDatePicker";
 import DropDownTextMenu from "../../shared/DropdownTextMenu.tsx";
-import RightSideBar from "../RightSideBar/RightSideBar";
-import RightSideBarItems from "../RightSideBar/RightSideBarItems";
-import ConflictAlert from "../LeftSideBar/ConfilctAlert";
+import RightSideBar from "../RightSideBar/RightSideBar.tsx";
+import RightSideBarItems from "../RightSideBar/RightSideBarItems.tsx";
+import ConflictAlert from "../LeftSideBar/ConflictAlert.tsx";
 
 import {
   useLoginProviderStore,

@@ -4,7 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import { useMsal, MsalProvider, useIsAuthenticated } from "@azure/msal-react";
 import { loginRequest } from "../config/authConfig.ts";
 
-import LoginPage from "../components/Login/LoginPage";
+import LoginPage from "../components/Login/LoginPage.tsx";
 import MainPage from "../components/Home/MainPage";
 import ScheduleDetails from "../components/Schedule/ScheduleDetails";
 

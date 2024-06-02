@@ -16,9 +16,9 @@ import Header from "../../shared/Header.tsx";
 import Logo from "../../shared/Logo.tsx";
 import CalendarHeader from "../Calendar/CalendarHeader";
 import Calendar from "../Calendar/Calendar";
-import LeftSideBar from "../LeftSideBar/LeftSideBar";
-import RightSideBar from "../RightSideBar/RightSideBar";
-import RightSideBarItems from "../RightSideBar/RightSideBarItems";
+import LeftSideBar from "../LeftSideBar/LeftSideBar.tsx";
+import RightSideBar from "../RightSideBar/RightSideBar.tsx";
+import RightSideBarItems from "../RightSideBar/RightSideBarItems.tsx";
 import EventFetching from "./TypeScript/EventFetching.tsx";
 
 import API from "../../config/api.ts";
