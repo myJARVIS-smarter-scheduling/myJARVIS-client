@@ -1,27 +1,22 @@
 import { useState } from "react";
 import { IoIosCheckboxOutline, IoIosCheckbox } from "react-icons/io";
 
-import DropdownMenu from "../../shared/DropdownMenu.tsx";
+import DropdownMenu from "../../shared/DropdownMenu";
 
-import {
-  useLoginProviderStore,
-  useAccountEventStore,
-} from "../../store/TypeScript/account.ts";
-import { useCalendarSelectionStore } from "../../store/TypeScript/navbar.ts";
-import { CALENDAR_COLOR_TEXT } from "../../constant/calendar.ts";
+import { useAccountEventStore } from "../../store/TypeScript/account";
+import { useCalendarSelectionStore } from "../../store/TypeScript/navbar";
 
-const viewOptions = [
-  { label: "all-in-one", value: "all-in-one" },
-  { label: "multiple", value: "multiple" },
-];
+import { CALENDAR_COLOR_TEXT } from "../../constant/calendar";
+import { CALENDAR_VIEW_OPTIONS } from "../../constant/options";
+import { Account } from "../../types/account";
 
 function UserSettings() {
-  const [view, setView] = useState(viewOptions[0].value);
+  const [view, setView] = useState<String>(CALENDAR_VIEW_OPTIONS[0].value);
   const { accounts } = useAccountEventStore();
   const { selectedCalendars, addAccount, removeAccount } =
     useCalendarSelectionStore();
 
-  function handleCalendarClick(email) {
+  function handleCalendarClick(email: string): void {
     if (selectedCalendars.includes(email)) {
       removeAccount(email);
     } else {
@@ -36,7 +31,10 @@ function UserSettings() {
           Calendar View
         </p>
         <div className="w-150">
-          <DropdownMenu options={viewOptions} handleOptionChange={setView} />
+          <DropdownMenu
+            options={CALENDAR_VIEW_OPTIONS}
+            handleOptionChange={setView}
+          />
         </div>
       </nav>
       <aside className="w-full space-y-20 mt-50 min-h-200">
@@ -44,7 +42,7 @@ function UserSettings() {
           Select Calendars
         </p>
         <div className="space-y-10">
-          {accounts.map((accountInfo, index) => (
+          {accounts.map((accountInfo: Account, index: number) => (
             <div
               key={accountInfo.email}
               className="flex items-center justify-start w-full space-x-10 h-30"

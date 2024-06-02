@@ -1,7 +1,7 @@
 import { FaUserCircle } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 
-import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
+import { useNavbarStore } from "../../store/TypeScript/navbar";
 
 function RightSideBar() {
   const {
@@ -9,12 +9,13 @@ function RightSideBar() {
     setIsRightSidebarOpen,
     navbarItem,
     setNavbarItem,
+    clearNavbarItem,
   } = useNavbarStore();
 
-  function handleIconClick(itemType) {
+  function handleIconClick(itemType: string) {
     if (navbarItem === itemType) {
       setIsRightSidebarOpen(false);
-      setNavbarItem("");
+      clearNavbarItem();
     } else {
       setIsRightSidebarOpen(true);
       setNavbarItem(itemType);
@@ -26,7 +27,6 @@ function RightSideBar() {
 
   return (
     <aside className="h-full py-20 bg-white border-l space-y-25 max-w-65 w-65 min-w-75">
-      {/* TODO. nav로 감싸진 컴포넌트를 분리합니다. */}
       <nav className="relative flex items-center justify-center">
         <button
           aria-label="Profile"

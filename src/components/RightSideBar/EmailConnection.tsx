@@ -1,13 +1,15 @@
 import { useMsal } from "@azure/msal-react";
 import { FaCrown, FaCirclePlus } from "react-icons/fa6";
 
-import API from "../../config/api.ts";
-import { loginRequest } from "../../config/authConfig.ts";
+import API from "../../config/api";
+import { loginRequest } from "../../config/authConfig";
 
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/TypeScript/account.ts";
+} from "../../store/TypeScript/account";
+
+import { Account } from "../../types/account";
 
 function EmailConnection() {
   const { instance } = useMsal();
@@ -15,10 +17,10 @@ function EmailConnection() {
   const { accounts } = useAccountEventStore();
 
   const accountEmailList = accounts
-    .map((account) => account.email)
-    .filter((email) => email !== user.email);
+    .map((account: Account) => account.email)
+    .filter((email: string) => email !== user?.email);
 
-  function getLogoPath(email) {
+  function getLogoPath(email: string): string {
     if (email.includes("gmail")) {
       return "/assets/google_calendar_logo.png";
     }
@@ -38,7 +40,9 @@ function EmailConnection() {
       .catch((error) => console.log(error));
   }
 
-  async function handleAddAccountClick(ev) {
+  async function handleAddAccountClick(
+    ev: React.MouseEvent<HTMLButtonElement>,
+  ) {
     ev.preventDefault();
     const provider = ev.currentTarget.id;
 
@@ -57,15 +61,17 @@ function EmailConnection() {
         <p className="flex mb-10 font-light text-center text-20">
           Connected Calendars
         </p>
-        <section className="flex items-center justify-start px-10 space-x-5 font-thin text-15">
-          <img
-            src={`${getLogoPath(user.email)}`}
-            className="w-20 h-auto"
-            alt="calendar logo"
-          />
-          <p className="text-center">{user.email}</p>
-          <FaCrown size={20} className="text-yellow-300" />
-        </section>
+        {user && (
+          <section className="flex items-center justify-start px-10 space-x-5 font-thin text-15">
+            <img
+              src={`${getLogoPath(user.email)}`}
+              className="w-20 h-auto"
+              alt="calendar logo"
+            />
+            <p className="text-center">{user.email}</p>
+            <FaCrown size={20} className="text-yellow-300" />
+          </section>
+        )}
         <section>
           {accountEmailList.map((account) => {
             return (

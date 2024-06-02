@@ -2,16 +2,17 @@ import { IoClose } from "react-icons/io5";
 
 import EmailConnection from "./EmailConnection";
 import UserSettings from "./UserSettings";
-import AsanaPage from "./Asana/AsanaPage.tsx";
+import AsanaPage from "./Asana/AsanaPage";
 
-import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
+import { useNavbarStore } from "../../store/TypeScript/navbar";
 
 function RightSideBarItems() {
-  const { setIsRightSidebarOpen, navbarItem, setNavbarItem } = useNavbarStore();
+  const { setIsRightSidebarOpen, navbarItem, clearNavbarItem } =
+    useNavbarStore();
 
   function handleCloseButtonClick() {
     setIsRightSidebarOpen(false);
-    setNavbarItem(null);
+    clearNavbarItem();
   }
 
   return (
