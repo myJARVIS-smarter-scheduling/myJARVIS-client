@@ -4,13 +4,22 @@ import { HiPencilSquare } from "react-icons/hi2";
 import { IoLocationOutline } from "react-icons/io5";
 import { PiUsersThree } from "react-icons/pi";
 
-import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar.ts";
-import { formatDateWithoutYear } from "../../utils/convertDateFormat.ts";
+import { useLoginProviderStore } from "../../store/TypeScript/account";
 
-import { useLoginProviderStore } from "../../store/TypeScript/account.ts";
-import { CALENDAR_BORDER_COLORS } from "../../constant/calendar.ts";
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar";
+import { formatDateWithoutYear } from "../../utils/convertDateFormat";
+import { EventData } from "src/types/events";
+import { CALENDAR_BORDER_COLORS } from "../../constant/calendar";
 
-function ConflictSchedule({ conflictEvents, accountIndex }) {
+interface ConflictScheduleProps {
+  conflictEvents: EventData;
+  accountIndex: number;
+}
+
+function ConflictSchedule({
+  conflictEvents,
+  accountIndex,
+}: ConflictScheduleProps) {
   const navigate = useNavigate();
   const { accountInfo } = useLoginProviderStore();
   const { title } = conflictEvents;
@@ -43,6 +52,8 @@ function ConflictSchedule({ conflictEvents, accountIndex }) {
 
   function handleOnClick() {
     const eventId = conflictEvents._id;
+
+    if (!eventAccount) return;
 
     navigate(`/events/confilcts/${eventId}/editing`, {
       state: {

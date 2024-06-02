@@ -1,32 +1,30 @@
 import { AiFillExclamationCircle } from "react-icons/ai";
 import { IoClose } from "react-icons/io5";
 
-import { useLoginProviderStore } from "../../store/TypeScript/account.ts";
+import { useLoginProviderStore } from "../../store/TypeScript/account";
 
 import ConflictAlertContent from "./ConflictAlertContent";
 
-function ConflictAlert({ handleConfirmEvent, handleAlertPopUp, conflictList }) {
+import { EventData } from "../../types/events";
+import { sortConflicts } from "../../utils/handleCalendarEvents";
+
+interface ConflictAlertProps {
+  handleConfirmEvent: () => void;
+  handleAlertPopUp: (status: boolean) => void;
+  conflictList: EventData[];
+}
+
+function ConflictAlert({
+  handleConfirmEvent,
+  handleAlertPopUp,
+  conflictList,
+}: ConflictAlertProps) {
   const { accountInfo } = useLoginProviderStore();
 
-  const sortedConflictList = conflictList.sort((a, b) => {
-    const dateOfA = new Date(a.startAt);
-    const dateOfB = new Date(b.startAt);
-
-    const dateStringA = `${dateOfA.getFullYear()}/${dateOfA.getMonth() + 1}/${dateOfA.getDate()}`;
-    const dateStringB = `${dateOfB.getFullYear()}/${dateOfB.getMonth() + 1}/${dateOfB.getDate()}`;
-
-    if (dateStringA < dateStringB) return -1;
-    if (dateStringA > dateStringB) return 1;
-
-    const indexOfA = accountInfo.findIndex(
-      (account) => account.accountId === a.accountId,
-    );
-    const indexOfB = accountInfo.findIndex(
-      (account) => account.accountId === b.accountId,
-    );
-
-    return indexOfA - indexOfB;
-  });
+  const sortedConflictList: EventData[] = sortConflicts(
+    conflictList,
+    accountInfo,
+  );
 
   return (
     <div className="absolute z-30 flex flex-col items-center p-20 bg-white border border-red-100 rounded-lg shadow-2xl left-60 space-y-15 w-200 min-w-500 max-h-500 top-190">
@@ -48,11 +46,11 @@ function ConflictAlert({ handleConfirmEvent, handleAlertPopUp, conflictList }) {
           </p>
         </header>
         <div className="flex flex-col items-center w-full space-y-10 overflow-y-auto max-h-400">
-          {sortedConflictList.map((conflictEvent) => (
+          {sortedConflictList.map((conflictEvent: EventData) => (
             <ConflictAlertContent
               key={conflictEvent.title}
               conflictEvent={conflictEvent}
-              handleAlertPopUp={handleAlertPopUp}
+              // handleAlertPopUp={handleAlertPopUp}
             />
           ))}
         </div>

@@ -1,56 +1,15 @@
 import { useEffect } from "react";
+
+import ConflictSchedule from "./ConflictSchedule";
+
 import {
   useLoginProviderStore,
   useAccountEventStore,
   useBiWeeklyEventListStore,
-} from "../../store/TypeScript/account.ts";
-import { useConflictEventStore } from "../../store/TypeScript/schedules.ts";
-import ConflictSchedule from "./ConflictSchedule";
+} from "../../store/TypeScript/account";
+import { useConflictEventStore } from "../../store/TypeScript/schedules";
 
-function findConflicts(accounts) {
-  const allEvents = accounts.flatMap((account) =>
-    account.events.map((event) => ({
-      ...event,
-      accountId: account.accountId,
-    })),
-  );
-
-  const conflicts = [];
-
-  for (let i = 0; i < allEvents.length; i += 1) {
-    for (let j = i + 1; j < allEvents.length; j += 1) {
-      const eventA = allEvents[i];
-      const eventB = allEvents[j];
-
-      if (
-        new Date(eventA.startAt) <= new Date(eventB.endAt) &&
-        new Date(eventB.startAt) <= new Date(eventA.endAt)
-      ) {
-        const conflictExists = conflicts.some((conflict) =>
-          conflict.events.find(
-            (event) =>
-              (event._id === eventA._id || event._id === eventB._id) &&
-              ((event.startAt === eventA.startAt &&
-                event.endAt === eventA.endAt) ||
-                (event.startAt === eventB.startAt &&
-                  event.endAt === eventB.endAt)),
-          ),
-        );
-
-        if (!conflictExists) {
-          conflicts.push({
-            accounts: [eventA.accountId, eventB.accountId].filter(
-              (value, index, self) => self.indexOf(value) === index,
-            ),
-            events: [eventA, eventB],
-          });
-        }
-      }
-    }
-  }
-
-  return conflicts;
-}
+import { findConflicts } from "../../utils/handleCalendarEvents";
 
 function ConflictList() {
   const { accounts } = useAccountEventStore();
@@ -123,7 +82,7 @@ function ConflictList() {
               </div>
             )}
             <ConflictSchedule
-              key={conflictPair.accounId}
+              key={conflictPair.accountId}
               conflictEvents={conflictPair}
               accountIndex={accountIndex}
             />

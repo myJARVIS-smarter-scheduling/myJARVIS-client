@@ -6,16 +6,20 @@ import { MdOutlineArrowDropDown, MdOutlineArrowDropUp } from "react-icons/md";
 import CalendarBody from "../Calendar/CalendarBody";
 import ConflictList from "./ConflictList";
 
-const selectOptions = [{ label: "Event", value: "calendar" }];
+import { ViewOption } from "../../types/selectBox";
+import { CREATE_VIEW_OPTIONS } from "../../constant/options";
 
 function LeftSideBar() {
   const [isOpen, setIsOpen] = useState(false);
-  const dropdownRef = useRef();
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
         setIsOpen(false);
       }
     }
@@ -27,7 +31,7 @@ function LeftSideBar() {
     };
   }, []);
 
-  function handleClick(option) {
+  function handleClick(option: ViewOption) {
     const today = new Date();
 
     if (option.value === "calendar") {
@@ -53,7 +57,7 @@ function LeftSideBar() {
         {isOpen && (
           <div className="absolute z-10 mt-5 font-thin origin-top-right bg-white rounded-md shadow-lg left-10 w-140 top-60 ring-1 ring-black ring-opacity-5 focus:outline-none">
             <div className="w-full overflow-auto max-h-400">
-              {selectOptions.map((option) => (
+              {CREATE_VIEW_OPTIONS.map((option) => (
                 <button
                   key={option.value}
                   type="button"
@@ -67,10 +71,9 @@ function LeftSideBar() {
           </div>
         )}
       </div>
-      {/* <AsanaNewTask isClicked={isClicked} setIsClicked={setIsClicked} /> */}
       <section className="flex flex-col items-center justify-center w-full py-10 space-y-10">
         <div className="h-auto px-20 max-w-280 w-280 sm:text-10 md:text-15">
-          <CalendarBody isMiniCalendar />
+          <CalendarBody isMiniCalendar={true} />
         </div>
         <div className="w-full">
           <p className="mt-20 font-normal text-center center text-20">
