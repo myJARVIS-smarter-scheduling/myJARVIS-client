@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
@@ -6,7 +5,12 @@ import { useCookies } from "react-cookie";
 import LoginForm from "./LoginForm";
 import IntroBox from "./IntroBox";
 
-function LoginPage({ onClickOutlookLogin, handleLoginStatus }) {
+interface LoginPageprops {
+  onClickOutlookLogin: () => void;
+  handleLoginStatus: (status: boolean) => void;
+}
+
+function LoginPage({ onClickOutlookLogin, handleLoginStatus }: LoginPageprops) {
   const navigate = useNavigate();
   const [cookies] = useCookies(["userId", "accessToken"]);
 

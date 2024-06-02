@@ -1,7 +1,14 @@
-import API from "../../config/api.ts";
+import API from "../../config/api";
 
-function LoginForm({ onClickOutlookLogin, handleLoginStatus }) {
-  async function handleGoogleButtonClick(ev) {
+interface LoginFormProps {
+  onClickOutlookLogin: () => void;
+  handleLoginStatus: (status: boolean) => void;
+}
+
+function LoginForm({ onClickOutlookLogin, handleLoginStatus }: LoginFormProps) {
+  async function handleGoogleButtonClick(
+    ev: React.MouseEvent<HTMLButtonElement>,
+  ) {
     ev.preventDefault();
     handleLoginStatus(true);
 
