@@ -1,29 +1,35 @@
 import { useRef, useEffect } from "react";
 import SchedulePreview from "../Schedule/SchedulePreview";
 
-import { useAccountEventStore } from "../../store/TypeScript/account.ts";
-import { useSelectedEventStore } from "../../store/TypeScript/schedules.ts";
-import { useCalendarSelectionStore } from "../../store/TypeScript/navbar.ts";
+import { useAccountEventStore } from "../../store/account";
+import { useSelectedEventStore } from "../../store/schedules";
+import { useCalendarSelectionStore } from "../../store/navbar";
 
-import { isSameDay } from "../../utils/handleCalendar.ts";
-import { sortEvents, getAllEvents } from "../../utils/handleCalendarEvents.ts";
+import { isSameDay } from "../../utils/handleCalendarEvents";
+import { sortEvents, getAllEvents } from "../../utils/handleCalendarEvents";
+import { CalendarEvent } from "src/types/events";
 
 import {
   CALENDAR_BORDER_COLORS,
   CALENDAR_COLORS_STRONG,
   CALENDAR_COLORS_LIGHT,
-} from "../../constant/calendar.ts";
+} from "../../constant/calendar";
 
-function CalendarEvents(date) {
-  const schedulePreviewRef = useRef();
-  const currentDate = date.date;
+interface CalendarEventsProps {
+  date: Date;
+}
+
+function CalendarEvents({ date }: CalendarEventsProps) {
+  const schedulePreviewRef = useRef<HTMLDivElement>(null);
+  const currentDate = date;
+
   const { accounts } = useAccountEventStore();
   const { selectedCalendars } = useCalendarSelectionStore();
   const { selectedEvent, setSelectedEvent, clearSelectedEvent } =
     useSelectedEventStore();
   const allEvents = getAllEvents(accounts);
   const sortedEvents = sortEvents(allEvents);
-  const renderedSections = [];
+  const renderedSections: JSX.Element[] = []; // 노션에 정리
   const startOfDay = new Date(
     currentDate.getFullYear(),
     currentDate.getMonth(),
@@ -36,10 +42,10 @@ function CalendarEvents(date) {
   );
 
   useEffect(() => {
-    function handleClickOutside(event) {
+    function handleClickOutside(event: MouseEvent) {
       if (
         schedulePreviewRef.current &&
-        !schedulePreviewRef.current.contains(event.target)
+        !schedulePreviewRef.current.contains(event.target as Node)
       ) {
         clearSelectedEvent();
       }
@@ -52,15 +58,8 @@ function CalendarEvents(date) {
     };
   }, []);
 
-  function handleEventClick(event) {
-    console.log(event);
+  function handleEventClick(event: CalendarEvent) {
     setSelectedEvent(event);
-  }
-
-  function handleEventClose(event) {
-    event.stopPropagation();
-
-    clearSelectedEvent();
   }
 
   sortedEvents
@@ -112,10 +111,8 @@ function CalendarEvents(date) {
                 className="absolute top-0 left-0 z-20 sm:top-1/2 sm:inset-x-auto"
               >
                 <SchedulePreview
-                  accountColor={accountColorStrong}
                   eventInfo={selectedEvent}
-                  ref={schedulePreviewRef}
-                  handleCloseButtonClick={handleEventClose}
+                  accountColor={accountColorStrong}
                 />
               </div>
             )}

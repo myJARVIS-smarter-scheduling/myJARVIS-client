@@ -2,10 +2,18 @@ import { useNavigate } from "react-router-dom";
 
 import CalendarEvents from "./CalendarEvents";
 
-import useCurrentMonthStore from "../../store/TypeScript/dates.ts";
-import { useConflictEventStore } from "../../store/TypeScript/schedules.ts";
+import useCurrentMonthStore from "../../store/dates";
+import { useConflictEventStore } from "../../store/schedules";
 
-import { getConflictEventsOfDate } from "../../utils/handleCalendarEvents.ts";
+import { getConflictEventsOfDate } from "../../utils/handleCalendarEvents";
+
+interface CalendarWeekProps {
+  week: Date[];
+  handleEventDateChange?: (date: Date) => void;
+  cellBorderClass: string;
+  conflictClass: string;
+  isMiniCalendar: boolean;
+}
 
 function CalendarWeek({
   week,
@@ -13,19 +21,19 @@ function CalendarWeek({
   cellBorderClass,
   conflictClass,
   isMiniCalendar,
-}) {
+}: CalendarWeekProps) {
   const navigate = useNavigate();
   const { currentMonth } = useCurrentMonthStore();
   const { conflictEvents } = useConflictEventStore();
   const overlappingDates = getConflictEventsOfDate(conflictEvents);
 
-  function handleNewEventDoubleClick(dateOfEvent) {
+  function handleNewEventDoubleClick(dateOfEvent: Date) {
     navigate("/events/new", { state: { dateOfEvent } });
   }
 
   return (
     <div className="flex flex-1">
-      {week.map((date) => {
+      {week.map((date: Date) => {
         const dateKey = date.toISOString();
         const isToday = date.toDateString() === new Date().toDateString();
         const isCurrentMonth = date.getMonth() === currentMonth.getMonth();
@@ -44,7 +52,9 @@ function CalendarWeek({
           >
             <button
               className={`w-20 h-20 relative rounded-full text-center cursor-pointer ${textColorOfCurrentMonth} ${isToday && "bg-blue-600 text-white"} ${isConflictDate && conflictClass}`}
-              onClick={() => handleEventDateChange(date)}
+              onClick={() =>
+                handleEventDateChange && handleEventDateChange(date)
+              }
             >
               {date.getDate()}
             </button>

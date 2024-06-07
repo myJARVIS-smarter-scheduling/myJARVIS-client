@@ -1,5 +1,9 @@
 /* eslint-disable */
-function CalendarDay({ dayLabels }) {
+interface CalendarDayProps {
+  dayLabels: string[];
+}
+
+function CalendarDay({ dayLabels }: CalendarDayProps) {
   return (
     <div className="flex">
       {dayLabels.map((day, index) => (

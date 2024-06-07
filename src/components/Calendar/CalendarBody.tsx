@@ -1,10 +1,10 @@
 /* eslint-disable */
-import useCalendarSettings from "../../hooks/useCalendarSettings.tsx";
+import useCalendarSettings from "../../hooks/useCalendarSettings";
 
 import CalendarDay from "./CalendarDay";
 import CalendarWeek from "./CalendarWeek";
 
-import useCurrentMonthStore from "../../store/TypeScript/dates";
+import useCurrentMonthStore from "../../store/dates";
 
 import {
   getCalendarDates,
