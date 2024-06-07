@@ -6,8 +6,8 @@ import { MdOutlineCheckCircleOutline, MdCheckCircle } from "react-icons/md";
 import { RiStackshareLine } from "react-icons/ri";
 import { RxExternalLink } from "react-icons/rx";
 
-import { useAsanaWorkspaceStore } from "../../../store/TypeScript/tasks";
-import { useLoadingStore } from "../../../store/TypeScript/navbar";
+import { useAsanaWorkspaceStore } from "../../../store/tasks";
+import { useLoadingStore } from "../../../store/navbar";
 import API from "../../../config/api";
 import { Task } from "../../../types/task";
 

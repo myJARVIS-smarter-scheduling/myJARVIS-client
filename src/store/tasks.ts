@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
-import { AsanaInfo, Workspace } from "../../types/task";
+import { AsanaInfo, Workspace } from "../types/task";
 
 interface AsanaLoginProviderState {
   // asanaInfo: AsanaInfo | {};

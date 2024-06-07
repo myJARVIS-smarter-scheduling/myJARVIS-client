@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import useFetchAndSyncEvents from "../../../apis/useFetchAndSyncEvents";
+import useFetchAndSyncEvents from "../../apis/useFetchAndSyncEvents";
 
-import { AccountInfo } from "../../../types/account";
+import { AccountInfo } from "../../types/account";
 
 interface AccountProps {
   account: AccountInfo;

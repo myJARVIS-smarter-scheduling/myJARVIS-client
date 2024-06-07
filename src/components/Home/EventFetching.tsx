@@ -1,5 +1,5 @@
-import { useLoginProviderStore } from "../../../store/TypeScript/account";
-import SyncEvents from "../TypeScript/SyncEvents";
+import { useLoginProviderStore } from "../../store/account";
+import SyncEvents from "./SyncEvents";
 
 function EventFetching() {
   const { accountInfo } = useLoginProviderStore();

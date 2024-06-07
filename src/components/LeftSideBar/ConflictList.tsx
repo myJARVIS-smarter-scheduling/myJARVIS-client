@@ -6,8 +6,8 @@ import {
   useLoginProviderStore,
   useAccountEventStore,
   useBiWeeklyEventListStore,
-} from "../../store/TypeScript/account";
-import { useConflictEventStore } from "../../store/TypeScript/schedules";
+} from "../../store/account";
+import { useConflictEventStore } from "../../store/schedules";
 
 import { findConflicts } from "../../utils/handleCalendarEvents";
 

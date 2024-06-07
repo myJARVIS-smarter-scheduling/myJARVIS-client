@@ -4,8 +4,8 @@ import axios from "axios";
 import {
   useAsanaLoginProviderStore,
   useAsanaWorkspaceStore,
-} from "../../../store/TypeScript/tasks";
-import { useLoadingStore } from "../../../store/TypeScript/navbar";
+} from "../../../store/tasks";
+import { useLoadingStore } from "../../../store/navbar";
 
 import AsanaLogin from "./AsanaLogin";
 import AsanaTaskList from "./AsanaTaskList";

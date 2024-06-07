@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
 
-import { useAccountEventStore } from "../store/TypeScript/account";
+import { useAccountEventStore } from "../store/account";
 import API from "../config/api";
 import { protectedResources } from "../config/authConfig";
 import { AccountInfo } from "../types/account";

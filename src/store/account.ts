@@ -1,12 +1,11 @@
 import { create } from "zustand";
 import { devtools, persist, createJSONStorage } from "zustand/middleware";
 
-import { EventData } from "../../types/events";
-import { User, Account, AccountInfo } from "../../types/account";
+import { EventData } from "../types/events";
+import { User, Account, AccountInfo } from "../types/account";
 
 interface LoginProviderState {
   provider: string;
-  // user: User | {};
   user: User | null;
   accountInfo: AccountInfo[];
   setProvider: (provider: string) => void;
@@ -24,7 +23,7 @@ interface AccountEventListState {
   accounts: Account[];
   connectAccount: (accountEventList: Account[]) => void;
   addEvent: (accountIds: string[], newEvent: EventData) => void;
-  deleteEvent: (accountIds: string[], eventId: string) => void;
+  deleteEvent: (accountId: string, eventId: string) => void;
   updateEvent: (accountId: string, updatedEvents: EventData[]) => void;
 }
 
@@ -33,7 +32,6 @@ const useLoginProviderStore = create<LoginProviderState>()(
     persist(
       (set) => ({
         provider: "",
-        // user: {},
         user: null,
         accountInfo: [],
         setProvider: (provider) => set({ provider }),
@@ -77,10 +75,10 @@ const useAccountEventStore = create<AccountEventListState>()(
         ),
       }));
     },
-    deleteEvent: (accountIds, eventId) => {
+    deleteEvent: (accountId, eventId) => {
       set((state) => ({
         accounts: state.accounts.map((account) =>
-          accountIds.includes(account.accountId)
+          accountId.includes(account.accountId)
             ? {
                 ...account,
                 events: account.events.filter((event) => event._id !== eventId),

@@ -1,7 +1,7 @@
 import { MdOutlineCheckCircleOutline, MdCheckCircle } from "react-icons/md";
 import { IoClose } from "react-icons/io5";
 
-import { useAsanaLoginProviderStore } from "../../../store/TypeScript/tasks";
+import { useAsanaLoginProviderStore } from "../../../store/tasks";
 import { Task, Workspace } from "../../../types/task";
 
 interface AsanaTaskDetailsProps {

@@ -1,7 +1,7 @@
 import { FaUserCircle } from "react-icons/fa";
 import { IoSettingsSharp } from "react-icons/io5";
 
-import { useNavbarStore } from "../../store/TypeScript/navbar";
+import { useNavbarStore } from "../../store/navbar";
 
 function RightSideBar() {
   const {

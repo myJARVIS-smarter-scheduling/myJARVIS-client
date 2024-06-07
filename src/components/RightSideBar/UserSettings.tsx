@@ -3,8 +3,8 @@ import { IoIosCheckboxOutline, IoIosCheckbox } from "react-icons/io";
 
 import DropdownMenu from "../../shared/DropdownMenu";
 
-import { useAccountEventStore } from "../../store/TypeScript/account";
-import { useCalendarSelectionStore } from "../../store/TypeScript/navbar";
+import { useAccountEventStore } from "../../store/account";
+import { useCalendarSelectionStore } from "../../store/navbar";
 
 import { CALENDAR_COLOR_TEXT } from "../../constant/calendar";
 import { CALENDAR_VIEW_OPTIONS } from "../../constant/options";

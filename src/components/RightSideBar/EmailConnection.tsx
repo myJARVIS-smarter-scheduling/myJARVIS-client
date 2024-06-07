@@ -7,7 +7,7 @@ import { loginRequest } from "../../config/authConfig";
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/TypeScript/account";
+} from "../../store/account";
 
 import { Account } from "../../types/account";
 

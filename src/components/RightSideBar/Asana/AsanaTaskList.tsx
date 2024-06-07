@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import {
   useAsanaLoginProviderStore,
   useAsanaWorkspaceStore,
-} from "../../../store/TypeScript/tasks";
-import { useLoadingStore } from "../../../store/TypeScript/navbar";
+} from "../../../store/tasks";
+import { useLoadingStore } from "../../../store/navbar";
 
 import AsanaBoardItem from "./AsanaBoardItem";
 import AsanaTaskDetails from "./AsanaTaskDetails";

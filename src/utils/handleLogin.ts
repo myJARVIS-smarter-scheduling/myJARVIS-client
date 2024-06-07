@@ -5,7 +5,7 @@ import { PublicClientApplication } from "@azure/msal-browser";
 
 import API from "../config/api";
 import { loginRequest } from "../config/authConfig";
-import { useLoginProviderStore } from "../store/TypeScript/account";
+import { useLoginProviderStore } from "../store/account";
 
 interface LogoutResponse {
   message: string;

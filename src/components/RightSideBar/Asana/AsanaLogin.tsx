@@ -1,4 +1,4 @@
-import { useLoadingStore } from "../../../store/TypeScript/navbar";
+import { useLoadingStore } from "../../../store/navbar";
 
 import API from "../../../config/api";
 

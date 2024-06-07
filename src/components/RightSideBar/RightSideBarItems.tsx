@@ -4,7 +4,7 @@ import EmailConnection from "./EmailConnection";
 import UserSettings from "./UserSettings";
 import AsanaPage from "./Asana/AsanaPage";
 
-import { useNavbarStore } from "../../store/TypeScript/navbar";
+import { useNavbarStore } from "../../store/navbar";
 
 function RightSideBarItems() {
   const { setIsRightSidebarOpen, navbarItem, clearNavbarItem } =
