@@ -5,34 +5,34 @@ import { FiTrash2 } from "react-icons/fi";
 import { IoClose, IoArchiveSharp } from "react-icons/io5";
 import { LuPencil } from "react-icons/lu";
 import { HiMiniUsers, HiMapPin } from "react-icons/hi2";
-import { useAccountEventStore } from "../../store/TypeScript/account.ts";
 
-import { CALENDAR_DAYS } from "../../constant/calendar.ts";
-import API from "../../config/api.ts";
+import { useAccountEventStore } from "../../store/account";
+import { useSelectedEventStore } from "../../store/schedules";
 
-function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
+import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendarEvents";
+import { CALENDAR_DAYS } from "../../constant/calendar";
+import { EventForm, CalendarEvent } from "src/types/events";
+import API from "../../config/api";
+
+interface SchedulePreviewProps {
+  eventInfo: CalendarEvent;
+  accountColor: string;
+}
+
+function SchedulePreview({ eventInfo, accountColor }: SchedulePreviewProps) {
   if (!eventInfo) {
     return null;
   }
 
   const navigate = useNavigate();
   const { deleteEvent } = useAccountEventStore();
+  const { clearSelectedEvent } = useSelectedEventStore();
   const { title, attendees } = eventInfo;
   const eventStartDate = new Date(eventInfo.startAt);
   const eventEndDate = new Date(eventInfo.endAt);
   const eventDay = CALENDAR_DAYS[eventStartDate.getDay()];
 
-  function setIsAllDayEventBasedOnDuration(startDate, endDate) {
-    const start = new Date(startDate);
-    const end = new Date(endDate);
-    const diff = end - start;
-
-    const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-    return diff === oneDayInMilliseconds;
-  }
-
-  const isAllDayEvent = setIsAllDayEventBasedOnDuration(
+  const isAllDayEvent = isAllDayEventBasedOnDuration(
     eventStartDate,
     eventEndDate,
   );
@@ -52,13 +52,20 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
     minute: "2-digit",
   });
 
-  function handleEditButtonClick(event) {
+  // function handleEditButtonClick(event: MouseEvent) { // 노션정리, 실제로는 CalendarEvents.tsx에 있음
+  function handleEditButtonClick(event: CalendarEvent) {
     navigate(`/events/${event.eventId}/editing`, {
       state: { event: { ...event, isAllDayEvent } },
     });
   }
 
-  async function handleDeleteButtonClick(event) {
+  function handleEventClose(event: React.MouseEvent<HTMLButtonElement>) {
+    event.stopPropagation();
+
+    clearSelectedEvent();
+  }
+
+  async function handleDeleteButtonClick(event: CalendarEvent) {
     const accountData = {
       accountId: event.accountId,
     };
@@ -70,7 +77,7 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
 
     if (response.data.result === "success") {
       deleteEvent(event.accountId, event._id);
-      handleCloseButtonClick();
+      clearSelectedEvent();
     }
   }
 
@@ -114,7 +121,7 @@ function SchedulePreview({ eventInfo, handleCloseButtonClick, accountColor }) {
           <button
             type="button"
             aria-label="close Button"
-            onClick={handleCloseButtonClick}
+            onClick={handleEventClose}
             className="flex items-center justify-center rounded-full hover:bg-slate-700 hover:text-white bg-slate-100 w-30 h-30"
           >
             <IoClose size={22} className="cursor-pointer" />

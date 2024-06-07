@@ -1,39 +1,37 @@
 /* eslint-disable no-nested-ternary */
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import axios from "axios";
+import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 
 import { FaRegCalendarCheck } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { HiBars3BottomLeft, HiMapPin } from "react-icons/hi2";
+import { ViewOption } from "src/types/selectBox";
 
-import Header from "../../shared/Header.tsx";
-import DropdownMenu from "../../shared/DropdownMenu.tsx";
-import TimePicker from "../../shared/CustomTimePicker.tsx";
-import TextEditor from "../../shared/TextEditor.tsx";
+import Header from "../../shared/Header";
+import DropdownMenu from "../../shared/DropdownMenu";
+import TimePicker from "../../shared/CustomTimePicker";
+import TextEditor from "../../shared/TextEditor";
 import CustomDatePicker from "../../shared/CustomDatePicker";
-import DropDownTextMenu from "../../shared/DropdownTextMenu.tsx";
-import RightSideBar from "../RightSideBar/RightSideBar.tsx";
-import RightSideBarItems from "../RightSideBar/RightSideBarItems.tsx";
-import ConflictAlert from "../LeftSideBar/ConflictAlert.tsx";
+import DropDownTextMenu from "../../shared/DropdownTextMenu";
+import RightSideBar from "../RightSideBar/RightSideBar";
+import RightSideBarItems from "../RightSideBar/RightSideBarItems";
+import ConflictAlert from "../LeftSideBar/ConflictAlert";
 
 import {
   useLoginProviderStore,
   useBiWeeklyEventListStore,
-} from "../../store/TypeScript/account.ts";
-import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
-import { isAllDayEventBasedOnDuration } from "../../utils/handleCalendar.ts";
-import { convertTimeWithTimezone } from "../../utils/convertDateFormat.ts";
+} from "../../store/account";
+import { useNavbarStore } from "../../store/navbar";
+import createEvent from "../../apis/usePostCreateEvent";
+import updateEventData from "../../apis/usePostUpdateEvent";
+import {
+  isAllDayEventBasedOnDuration,
+  isAllDayEventOfBiweekly,
+} from "../../utils/handleCalendarEvents";
+import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
 
-import API from "../../config/api.ts";
-import TIMEZONE_LIST from "../../constant/timezone.ts";
-
-const placeholder = "More actions";
-const headerOptions = [
-  { label: "Duplicate", value: "Duplicate" },
-  { label: "Copy", value: "Copy" },
-  { label: "Delete", value: "Delete" },
-];
+import TIMEZONE_LIST from "../../constant/timezone";
+import { EventData } from "../../types/events";
 
 function ScheduleDetails({ isNewEvent = false }) {
   const navigate = useNavigate();
@@ -42,20 +40,29 @@ function ScheduleDetails({ isNewEvent = false }) {
   const { biWeeklyEvents } = useBiWeeklyEventListStore();
   const { isRightSidebarOpen } = useNavbarStore();
 
+  const accountList = accountInfo.map((account) => {
+    const accountOptions: ViewOption = { label: "", value: "" };
+
+    accountOptions.label = account.email;
+    accountOptions.value = account.accountId;
+
+    return accountOptions;
+  });
+
   const initialEventState = location.state.event || {};
   const theDateOfClick = location.state.dateOfEvent;
   const formattedEventTimezone = TIMEZONE_LIST.find(
     (option) =>
       option.value === initialEventState.timezone ||
-      option.value === user.timezone ||
-      option.alt === user.timezone,
+      option.value === user?.timezone ||
+      option.alt === user?.timezone,
   );
   const formattedUserTimezone = TIMEZONE_LIST.find(
-    (option) => option.value === user.timezone || option.alt === user.timezone,
+    (option) =>
+      option.value === user?.timezone || option.alt === user?.timezone,
   );
-
   const hasEventTimezone =
-    formattedEventTimezone.value !== formattedUserTimezone.value;
+    formattedEventTimezone?.value !== formattedUserTimezone?.value;
   const isAllDayEvent = isAllDayEventBasedOnDuration(
     initialEventState.startAt,
     initialEventState.endAt,
@@ -65,6 +72,10 @@ function ScheduleDetails({ isNewEvent = false }) {
   let convertedEndDate;
   let convertedStartTime;
   let convertedEndTime;
+  let eventStartDate = initialEventState.startAt;
+  let eventEndDate = initialEventState.endAt;
+  let eventStartTime = initialEventState.startAt;
+  let eventEndTime = initialEventState.endAt;
 
   if (hasEventTimezone && !isNewEvent) {
     const convertedStart = convertTimeWithTimezone(
@@ -81,19 +92,6 @@ function ScheduleDetails({ isNewEvent = false }) {
     convertedStartTime = convertedStart.split(",")[1].trim();
     convertedEndTime = convertedEnd.split(",")[1].trim();
   }
-
-  const accountList = accountInfo.map((account) => {
-    const accountOptions = {};
-    accountOptions.label = account.email;
-    accountOptions.value = account.accountId;
-
-    return accountOptions;
-  });
-
-  let eventStartDate = initialEventState.startAt;
-  let eventEndDate = initialEventState.endAt;
-  let eventStartTime = initialEventState.startAt;
-  let eventEndTime = initialEventState.endAt;
 
   if (isNewEvent) {
     eventStartDate = theDateOfClick;
@@ -125,153 +123,38 @@ function ScheduleDetails({ isNewEvent = false }) {
   );
   const [startDate, setStartDate] = useState(eventStartDate);
   const [endDate, setEndDate] = useState(eventEndDate);
-  const [timezone, setTimezone] = useState(formattedEventTimezone.value);
+  const [timezone, setTimezone] = useState(
+    formattedEventTimezone?.value || user?.timezone || "",
+  );
   const [startTime, setStartTime] = useState(eventStartTime);
   const [endTime, setEndTime] = useState(eventEndTime);
-  const [conflicts, setConflicts] = useState([]);
+  const [conflicts, setConflicts] = useState<EventData[]>([]);
   const [hasConflictAlert, sethasConflictAlert] = useState(false);
 
-  function handleAllDayEventChange(ev) {
+  function handleAllDayEventChange(ev: React.ChangeEvent<HTMLInputElement>) {
     setIsAllDay(ev.target.checked);
   }
 
-  async function createEvent() {
-    const convertedNewStartDate = startDate.toLocaleDateString();
-    const convertedNewEndDate = endDate.toLocaleDateString();
-    const formattedStartDate = `${convertedNewStartDate} ${startTime}`;
-    const formattedEndDate = `${convertedNewEndDate} ${endTime}`;
-    const accountIdForNewEvent = accountId;
-    const accountEmailForNewEvent = accountInfo.find(
-      (account) => account.accountId === accountIdForNewEvent,
-    ).email;
-    const isMicrosoftAccount = accountEmailForNewEvent.includes("outlook");
-
-    let startAt;
-    let endAt;
-    let formattedTimezone;
-
-    if (isAllDayEvent) {
-      startAt = startDate.toLocaleDateString();
-      endAt = endDate;
-      endAt.setDate(endAt.getDate() + 1);
-      endAt = endAt.toLocaleDateString();
-    } else {
-      startAt = formattedStartDate;
-      endAt = formattedEndDate;
-    }
-
-    if (isMicrosoftAccount) {
-      const foundAltValue = TIMEZONE_LIST.find(
-        (option) => option.value === timezone,
-      );
-
-      formattedTimezone = foundAltValue ? foundAltValue.alt : user.timezone;
-    } else {
-      formattedTimezone = timezone;
-    }
-
-    const newEventData = {
-      accountId,
-      title,
-      place,
-      startAt,
-      endAt,
-      timezone: formattedTimezone,
-      isAllDayEvent: isAllDay,
-      description,
-    };
-
-    const response = await axios.post(
-      API.EVENTS,
-      { newEventData },
-      { withCredentials: true },
-    );
-
-    if (response.data.result === "success") {
-      const { newEvent } = response.data;
-
-      console.log("Created Event:", newEvent);
-
-      navigate("/calendar");
-    }
-  }
-
-  async function updateEventData() {
-    const convertedUpdateStartDate = new Date(startDate)
-      .toLocaleDateString("en-US", {
-        month: "numeric",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(",", "");
-    const convertedUpdateEndDate = new Date(endDate)
-      .toLocaleDateString("en-US", {
-        month: "numeric",
-        day: "numeric",
-        year: "numeric",
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: true,
-      })
-      .replace(",", "");
-
-    const { provider } = initialEventState;
-
-    const startAt = isAllDayEvent
-      ? startDate.setHours(0, 0, 0, 0)
-      : convertedUpdateStartDate;
-
-    const endAt = isAllDayEvent
-      ? endDate.setDate(endDate.getDate() + 1).setHours(0, 0, 0, 0)
-      : convertedUpdateEndDate;
-
-    const updatedEventData = {
-      dataId: initialEventState._id,
-      title,
-      place,
-      startAt,
-      endAt,
-      timezone,
-      isAllDayEvent: isAllDay,
-      description,
-      provider,
-    };
-
-    const response = await axios.patch(
-      `${API.EVENTS}/${initialEventState.eventId}`,
-      { updatedEventData },
-      { withCredentials: true },
-    );
-
-    if (response.data.result === "success") {
-      const { updatedEvent } = response.data;
-
-      console.log("Updated Event:", updatedEvent);
-
-      navigate("/calendar");
-    }
-  }
-
   function handleSaveWithConflict() {
+    const eventDataId = initialEventState._id;
+    const eventInfo = {
+      title,
+      place,
+      description,
+      startDate,
+      endDate,
+      startTime,
+      endTime,
+      timezone,
+      isAllDay,
+      accountId,
+    };
+
     if (isNewEvent) {
-      createEvent();
+      createEvent(eventInfo);
     } else {
-      updateEventData();
+      updateEventData({ eventDataId, eventInfo });
     }
-  }
-
-  function isAllDayEventOfBiweekly(event) {
-    const start = new Date(event.startAt);
-    const end = new Date(event.endAt);
-
-    return (
-      end - start === 86400000 &&
-      start.getHours() === 0 &&
-      start.getMinutes() === 0
-    );
   }
 
   function handleSaveClick() {
@@ -313,9 +196,9 @@ function ScheduleDetails({ isNewEvent = false }) {
     const conflictEvents = biWeeklyEvents.filter((event) => {
       const eventStart = new Date(event.startAt);
       const eventEnd = new Date(event.endAt);
-      const eventIsAllDay = isAllDayEventOfBiweekly(event);
+      const isAllDayEvent = isAllDayEventOfBiweekly(event);
 
-      if (eventIsAllDay) {
+      if (isAllDayEvent) {
         return (
           newStart.toDateString() === eventStart.toDateString() ||
           newStart.toDateString() === eventEnd.toDateString()
@@ -372,12 +255,6 @@ function ScheduleDetails({ isNewEvent = false }) {
                 >
                   <p>Save</p>
                 </button>
-                <div className="text-1em w-170">
-                  {/* <DropdownMenu
-                    options={headerOptions}
-                    placeholder={placeholder}
-                  /> */}
-                </div>
               </nav>
             </div>
           </section>
@@ -437,7 +314,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                   <input
                     id="allDayEvent"
                     type="checkbox"
-                    checked={isAllDay ? "checked" : ""}
+                    checked={isAllDay ? true : false}
                     className="w-17 h-17"
                     onChange={(event) => handleAllDayEventChange(event)}
                   />
@@ -463,12 +340,14 @@ function ScheduleDetails({ isNewEvent = false }) {
                       <div className="min-w-210 text-15">
                         <DropdownMenu
                           options={accountList}
-                          placeholder={user.email}
+                          placeholder={user?.email}
                           handleOptionChange={setAccountId}
                         />
                       </div>
                     ) : (
-                      <p>{isNewEvent ? user.email : initialEventState.email}</p>
+                      <p>
+                        {isNewEvent ? user?.email : initialEventState.email}
+                      </p>
                     )}
                   </div>
                   <div className="flex items-center justify-start space-x-25">
@@ -501,7 +380,7 @@ function ScheduleDetails({ isNewEvent = false }) {
                 </nav>
                 <div className="w-full h-full space-y-20 font-light text-slate-700">
                   {!isNewEvent &&
-                    initialEventState.attendees.map((attendee) => {
+                    initialEventState.attendees.map((attendee: string) => {
                       return (
                         <div
                           key={attendee}
