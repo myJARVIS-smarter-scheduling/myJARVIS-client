@@ -13,3 +13,9 @@ export const CALENDAR_VIEW_OPTIONS: ViewOption[] = [
   { label: "all-in-one", value: "all-in-one" },
   { label: "multiple", value: "multiple" },
 ];
+
+export const SCHEDULE_HEADER_OPTIONS: ViewOption[] = [
+  { label: "Duplicate", value: "Duplicate" },
+  { label: "Copy", value: "Copy" },
+  { label: "Delete", value: "Delete" },
+];

@@ -1,16 +1,6 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 
-interface DropOption {
-  label: string;
-  value: string;
-}
-
-interface Timezone {
-  label: string;
-  value: string;
-  lat: number;
-  long: number;
-}
+import { ViewOption, Timezone } from "../types/selectBox";
 
 interface DropDownTextMenuProps {
   options: Timezone[];
@@ -56,7 +46,7 @@ function DropDownTextMenu({
     };
   }, []);
 
-  const selectOption = (option: DropOption) => {
+  const selectOption = (option: ViewOption) => {
     setselectedOption(option.label);
     handleOptionChange(option.value);
     setIsOpen(false);

@@ -1,3 +1,16 @@
+export interface EventForm {
+  title: string;
+  place: string;
+  description: string;
+  startDate: Date;
+  endDate: Date;
+  startTime?: string | Date;
+  endTime?: string | Date;
+  timezone?: string;
+  isAllDay: boolean;
+  accountId?: string;
+}
+
 export interface EventData {
   accountId: string;
   attendees: string[];

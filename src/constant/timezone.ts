@@ -1,6 +1,5 @@
-const TIMEZONE_LIST = [
-  // TODO. Object 혹은 Map 객체로 변경해서 key값으로 바로 조회 가능할지 고민해봅니다.
-  // 다만, 컴포넌트 재사용 하고 있는 점에 유의합니다.
+import { Timezone } from "src/types/selectBox";
+const TIMEZONE_LIST: Timezone[] = [
   {
     label: "(GMT-11:00) Niue Time",
     value: "Pacific/Niue",
@@ -944,6 +943,7 @@ const TIMEZONE_LIST = [
     label: "(GMT+01:00) Central European Time - Belgrade",
     value: "Europe/Belgrade",
     lat: 44.8333,
+    long: 20.4667,
   },
   {
     label: "(GMT+01:00) Central European Time - Berlin",
@@ -1781,7 +1781,7 @@ const TIMEZONE_LIST = [
     long: 141.45,
   },
   {
-    alue: "(GMT+11:00) Bougainville Time",
+    label: "(GMT+11:00) Bougainville Time",
     value: "Pacific/Bougainville",
     lat: -5.7833,
     long: 155.5667,
@@ -1906,7 +1906,12 @@ const TIMEZONE_LIST = [
     lat: 53.0167,
     long: 158.65,
   },
-  { label: "(GMT+12:00) Tuvalu Time", value: "Pacific/Funafuti" },
+  {
+    label: "(GMT+12:00) Tuvalu Time",
+    value: "Pacific/Funafuti",
+    lat: -8.5211,
+    long: 179.1944,
+  },
   {
     label: "(GMT+12:00) Wake Island Time",
     value: "Pacific/Wake",
