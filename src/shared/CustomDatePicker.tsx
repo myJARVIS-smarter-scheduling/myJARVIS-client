@@ -3,20 +3,30 @@ import { useState, useEffect, useRef } from "react";
 import CalendarHeader from "../components/Calendar/CalendarHeader";
 import CalendarBody from "../components/Calendar/CalendarBody";
 
-function CustomDatePicker({ initialTime, handleDateClick, placeholder }) {
-  function getFormattedDate(date) {
+interface CustomDatePickerProps {
+  initialTime: Date | string;
+  handleDateClick: (selectedDate: Date | string) => void;
+  placeholder: string;
+}
+
+function CustomDatePicker({
+  initialTime,
+  handleDateClick,
+  placeholder,
+}: CustomDatePickerProps) {
+  function getFormattedDate(date: Date | string) {
     return new Date(date).toDateString().split(" ").slice(0, 4).join(" ");
   }
 
   const [eventDate, seteventDate] = useState(getFormattedDate(initialTime));
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const calendarRef = useRef();
+  const calendarRef = useRef<HTMLDivElement>(null);
 
   function toggleCalendar() {
     setIsCalendarOpen(!isCalendarOpen);
   }
 
-  function handleDateChange(selectedDate) {
+  function handleDateChange(selectedDate: Date | string) {
     const formattedDate = getFormattedDate(selectedDate);
 
     seteventDate(formattedDate);
@@ -25,8 +35,11 @@ function CustomDatePicker({ initialTime, handleDateClick, placeholder }) {
   }
 
   useEffect(() => {
-    function handleClickOutside(event) {
-      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        calendarRef.current &&
+        !calendarRef.current.contains(event.target as Node)
+      ) {
         setIsCalendarOpen(false);
       }
     }
