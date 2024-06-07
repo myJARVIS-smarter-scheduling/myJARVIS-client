@@ -1,8 +1,7 @@
-import { isAllDayEventBasedOnDuration } from "./handleCalendar";
 import { Account, AccountInfo } from "../types/account";
 import { CalendarEvent, Schedule, EventData } from "../types/events";
 
-export const sortEvents = (allEvents: CalendarEvent[]) =>
+export const sortEvents = (allEvents: CalendarEvent[]): CalendarEvent[] =>
   allEvents.sort((a: CalendarEvent, b: CalendarEvent) => {
     const startAtA = new Date(a.startAt).getTime();
     const startAtB = new Date(b.startAt).getTime();
@@ -148,4 +147,42 @@ export const getConflictEventsOfDate = (conflictEvents: Schedule[]) => {
   });
 
   return conflictDates;
+};
+
+export const isAllDayEventOfBiweekly = (
+  event: CalendarEvent | EventData,
+): boolean => {
+  const start = new Date(event.startAt);
+  const end = new Date(event.endAt);
+
+  return (
+    end.getTime() - start.getTime() === 86400000 &&
+    start.getHours() === 0 &&
+    start.getMinutes() === 0
+  );
+};
+
+export const isAllDayEventBasedOnDuration = (
+  startDate?: Date | string,
+  endDate?: Date | string,
+): boolean => {
+  const start = new Date(startDate ?? "");
+  const end = new Date(endDate ?? "");
+
+  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+    return false;
+  }
+
+  const diff = end.getTime() - start.getTime();
+  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
+
+  return diff === oneDayInMilliseconds;
+};
+
+export const isSameDay = (eventDate: Date, comparedDate: Date): boolean => {
+  return (
+    eventDate.getFullYear() === comparedDate.getFullYear() &&
+    eventDate.getMonth() === comparedDate.getMonth() &&
+    eventDate.getDate() === comparedDate.getDate()
+  );
 };

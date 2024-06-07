@@ -1,12 +1,12 @@
 import {
   InteractionRequiredAuthError,
-  PublicClientApplication,
+  IPublicClientApplication,
   AccountInfo,
 } from "@azure/msal-browser";
 import { loginRequest } from "../../config/authConfig";
 
 async function getAccessTokenForAccount(
-  msalInstance: PublicClientApplication,
+  msalInstance: IPublicClientApplication,
   account: AccountInfo,
 ) {
   const silentRequest = {

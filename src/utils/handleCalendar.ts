@@ -1,28 +1,3 @@
-export const isAllDayEventBasedOnDuration = (
-  startDate?: Date | string,
-  endDate?: Date | string,
-): boolean => {
-  const start = new Date(startDate ?? "");
-  const end = new Date(endDate ?? "");
-
-  if (isNaN(start.getTime()) || isNaN(end.getTime())) {
-    return false;
-  }
-
-  const diff = end.getTime() - start.getTime();
-  const oneDayInMilliseconds = 24 * 60 * 60 * 1000;
-
-  return diff === oneDayInMilliseconds;
-};
-
-export const isSameDay = (eventDate: Date, comparedDate: Date): boolean => {
-  return (
-    eventDate.getFullYear() === comparedDate.getFullYear() &&
-    eventDate.getMonth() === comparedDate.getMonth() &&
-    eventDate.getDate() === comparedDate.getDate()
-  );
-};
-
 export const getCalendarDates = (thisMonth: Date): Date[] => {
   const dateList: Date[] = [];
 

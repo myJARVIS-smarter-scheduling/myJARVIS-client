@@ -34,7 +34,7 @@ export const sendAllDataToServer = async (
   handleGraphData: (data: MicrosoftEvent[]) => void,
   connectAccount: (events: AccountEventData[]) => void,
   setUser: (user: User) => void,
-  setAccountInfo: (info: AccountInfo) => void,
+  setAccountInfo: (info: AccountInfo[]) => void,
 ) => {
   try {
     const response = await axios.post(
