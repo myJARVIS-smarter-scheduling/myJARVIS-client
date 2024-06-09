@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
+import { IPublicClientApplication } from "@azure/msal-browser";
 import { useMsal } from "@azure/msal-react";
 import { HiOutlineMenu } from "react-icons/hi";
 import axios from "axios";
@@ -9,72 +10,74 @@ import axios from "axios";
 import {
   useLoginProviderStore,
   useAccountEventStore,
-} from "../../store/TypeScript/account.ts";
-import { useNavbarStore } from "../../store/TypeScript/navbar.ts";
+} from "../../store/account";
+import { useNavbarStore } from "../../store/navbar";
 
-import Header from "../../shared/Header.tsx";
-import Logo from "../../shared/Logo.tsx";
+import Header from "../../shared/Header";
+import Logo from "../../shared/Logo";
 import CalendarHeader from "../Calendar/CalendarHeader";
 import Calendar from "../Calendar/Calendar";
-import LeftSideBar from "../LeftSideBar/LeftSideBar.tsx";
-import RightSideBar from "../RightSideBar/RightSideBar.tsx";
-import RightSideBarItems from "../RightSideBar/RightSideBarItems.tsx";
-import EventFetching from "./TypeScript/EventFetching.tsx";
+import LeftSideBar from "../LeftSideBar/LeftSideBar";
+import RightSideBar from "../RightSideBar/RightSideBar";
+import RightSideBarItems from "../RightSideBar/RightSideBarItems";
+import EventFetching from "./EventFetching";
 
-import API from "../../config/api.ts";
-import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken.ts";
+import { handleLogout } from "../../apis/usePostAuth";
+import fetchCalendarData from "../../apis/usePostCalendar";
+import getAccessTokenForAccount from "../../utils/microsoft/getAccessToken";
 import {
   fetchDataWithRetry,
   sendAllDataToServer,
-} from "../../utils/handleData.ts";
-import { protectedResources, loginRequest } from "../../config/authConfig.ts";
+} from "../../utils/handleData";
+
+import API from "../../config/api";
+import { protectedResources, loginRequest } from "../../config/authConfig";
+import { AccountInfo } from "../../types/account";
+import {
+  UserInfo,
+  MailboxSettings,
+  MicrosoftEventResponse,
+  MicrosoftEvent,
+  AccountData,
+} from "../../types/microsoft";
 
 function MainPage() {
   const navigate = useNavigate();
-  const { instance: msalInstance } = useMsal();
+  // const { instance: msalInstance } = useMsal();
+  const { instance: msalInstance } = useMsal() as {
+    instance: IPublicClientApplication;
+  };
+  const [graphData, setGraphData] = useState<MicrosoftEvent[]>();
+  const [cookies, setCookie, removeCookie] = useCookies([
+    "userId",
+    "accessToken",
+  ]);
   const { deleteEvent, connectAccount, accounts } = useAccountEventStore();
   const { setUser, setAccountInfo, accountInfo, user } =
     useLoginProviderStore();
   const { isRightSidebarOpen, isLeftSidebarOpen, setIsLeftSidebarOpen } =
     useNavbarStore();
-  const [graphData, setGraphData] = useState();
-  const [cookies, setCookie, removeCookie] = useCookies([
-    "userId",
-    "accessToken",
-  ]);
   const microsoftAccountList = msalInstance.getAllAccounts();
   const connectedMicrosoftAccounts = accountInfo.filter((account) =>
     account.email.includes("outlook"),
   );
 
-  async function requestReLogin(email, instance) {
+  async function requestReLogin(
+    email: string,
+    instance: IPublicClientApplication,
+  ) {
     instance
       .loginRedirect({
         ...loginRequest,
         loginHint: email,
       })
-      .catch((error) => console.log(error));
-  }
-
-  function handleLogout() {
-    if (user.provider === "microsoft") {
-      removeCookie("userId");
-      removeCookie("accessToken");
-
-      navigate("/");
-    } else {
-      const response = axios.post(API.LOGOUT, {}, { withCredentials: true });
-
-      if (response.message === "success") {
-        navigate("/");
-      }
-    }
+      .catch((error: Error) => console.log(error));
   }
 
   useEffect(() => {
-    if (microsoftAccountList.length > 0) {
+    if (microsoftAccountList.length > 0 && user !== null) {
       const fetchAndSendData = async () => {
-        const allAccountData = [];
+        const allAccountData: AccountData[] = [];
 
         for (const account of microsoftAccountList) {
           const accessToken = await getAccessTokenForAccount(
@@ -84,7 +87,8 @@ function MainPage() {
 
           if (
             account === microsoftAccountList[0] &&
-            user.provider === "microsoft"
+            typeof user !== "string" &&
+            user?.provider === "microsoft"
           ) {
             const currentAccessToken = cookies.accessToken;
 
@@ -93,32 +97,35 @@ function MainPage() {
             }
           }
 
-          try {
-            const userInfo = await fetchDataWithRetry(
-              protectedResources.graphMe.endpoint,
-              accessToken,
-            );
+          if (accessToken) {
+            try {
+              const userInfo: UserInfo = await fetchDataWithRetry(
+                protectedResources.graphMe.endpoint,
+                accessToken,
+              );
 
-            const mailboxSettings = await fetchDataWithRetry(
-              protectedResources.graphMailSetting.endpoint,
-              accessToken,
-            );
+              const mailboxSettings: MailboxSettings = await fetchDataWithRetry(
+                protectedResources.graphMailSetting.endpoint,
+                accessToken,
+              );
 
-            const calendarEvents = await fetchDataWithRetry(
-              protectedResources.graphCalendarEvents.endpoint,
-              accessToken,
-            );
+              const calendarEvents: MicrosoftEventResponse =
+                await fetchDataWithRetry(
+                  protectedResources.graphCalendarEvents.endpoint,
+                  accessToken,
+                );
 
-            allAccountData.push({
-              userInfo,
-              mailboxSettings,
-              calendarEvents,
-              accessToken,
-            });
-          } catch (error) {
-            console.error("Fail to load data:", error);
+              allAccountData.push({
+                userInfo,
+                mailboxSettings,
+                calendarEvents,
+                accessToken,
+              });
+            } catch (error) {
+              console.error("Fail to load data:", error);
 
-            continue;
+              continue;
+            }
           }
         }
 
@@ -140,42 +147,42 @@ function MainPage() {
   }, [microsoftAccountList.length]);
 
   useEffect(() => {
-    async function fetchCalendarData() {
-      try {
-        const response = await axios.post(
-          API.CALENDAR.EVENTS,
-          {},
-          {
-            withCredentials: true,
-          },
-        );
+    // async function fetchCalendarData() {
+    //   try {
+    //     const response = await axios.post(
+    //       API.CALENDAR.EVENTS,
+    //       {},
+    //       {
+    //         withCredentials: true,
+    //       },
+    //     );
 
-        if (response.data.result === "success") {
-          const userInfo = response.data.user;
-          const accountEvents = response.data.accountEventList;
-          const accountInfoList = response.data.accountEventList.map(
-            (account) => {
-              return {
-                accountId: account.accountId,
-                accessToken: account.accessToken,
-                provider: account.provider,
-                email: account.email,
-              };
-            },
-          );
+    //     if (response.data.result === "success") {
+    //       const userInfo = response.data.user;
+    //       const accountEvents = response.data.accountEventList;
+    //       const accountInfoList = response.data.accountEventList.map(
+    //         (account: AccountInfo) => {
+    //           return {
+    //             accountId: account.accountId,
+    //             accessToken: account.accessToken,
+    //             provider: account.provider,
+    //             email: account.email,
+    //           };
+    //         },
+    //       );
 
-          setUser(userInfo);
-          setAccountInfo(accountInfoList);
-          connectAccount(accountEvents);
-        }
+    //       setUser(userInfo);
+    //       setAccountInfo(accountInfoList);
+    //       connectAccount(accountEvents);
+    //     }
 
-        if (response.data.result === "fail") {
-          navigate("/");
-        }
-      } catch (error) {
-        console.error("Failed to fetch data from server:", error);
-      }
-    }
+    //     if (response.data.result === "fail") {
+    //       navigate("/");
+    //     }
+    //   } catch (error) {
+    //     console.error("Failed to fetch data from server:", error);
+    //   }
+    // }
 
     fetchCalendarData();
   }, [deleteEvent, accounts, setAccountInfo, setGraphData]);
