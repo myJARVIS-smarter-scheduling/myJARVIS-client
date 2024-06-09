@@ -60,7 +60,12 @@ const createEvent = async (eventInfo: EventForm) => {
       (option) => option.value === timezone,
     );
 
-    formattedTimezone = foundAltValue ? foundAltValue.alt : user?.timezone;
+    // formattedTimezone = foundAltValue ? foundAltValue.alt : user?.timezone;
+    formattedTimezone = foundAltValue
+      ? foundAltValue.alt
+      : typeof user !== "string"
+        ? user?.timezone
+        : timezone;
   } else {
     formattedTimezone = timezone;
   }

@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useCookies } from "react-cookie";
 import axios from "axios";
 
-import { useLoginProviderStore } from "src/store/account";
+import { useLoginProviderStore } from "../store/account";
 
 import API from "../config/api";
 
@@ -14,7 +14,8 @@ export const handleLogout = async () => {
     "accessToken",
   ]);
 
-  if (user?.provider === "microsoft") {
+  // if (user?.provider === "microsoft") {
+  if (typeof user !== "string" && user?.provider === "microsoft") {
     removeCookie("userId");
     removeCookie("accessToken");
 
