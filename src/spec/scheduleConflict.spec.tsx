@@ -31,6 +31,8 @@ const mockAccountList = [
         provider: "google",
         eventId: "uniqueKeyOfEvent1",
         timezone: "Asia/Seoul",
+        etag: "12345",
+        __v: 0,
       },
     ],
   },
@@ -50,6 +52,8 @@ const mockAccountList = [
         provider: "microsoft",
         eventId: "uniqueKeyOfEvent2",
         timezone: "Asia/Seoul",
+        etag: "67890",
+        __v: 1,
       },
     ],
   },
@@ -58,27 +62,19 @@ const mockAccountList = [
 const mockConflicts = mockAccountList.flatMap((account) => account.events);
 
 vi.mock("../store/account", () => ({
-  useAccountEventStore: vi.fn(),
-  useLoginProviderStore: vi.fn(),
-  useBiWeeklyEventListStore: vi.fn(),
-}));
-
-beforeEach(() => {
-  useAccountEventStore.mockImplementation(() => ({
+  useAccountEventStore: () => ({
     accounts: mockAccountList,
     connectAccount: vi.fn(),
     addConflict: vi.fn(),
-  }));
-
-  useLoginProviderStore.mockImplementation(() => ({
+  }),
+  useLoginProviderStore: () => ({
     accountInfo: mockAccountInfo,
-  }));
-
-  useBiWeeklyEventListStore.mockImplementation(() => ({
+  }),
+  useBiWeeklyEventListStore: () => ({
     biWeeklyEvents: [],
     addBiWeeklyEvents: vi.fn(),
-  }));
-});
+  }),
+}));
 
 describe("ConflictList Component", () => {
   it("renders ConflictSchedule components with correct information when there are schedule conflicts", async () => {
@@ -86,6 +82,7 @@ describe("ConflictList Component", () => {
       mockConflicts.map((conflictEvent, index) => (
         <MemoryRouter>
           <ConflictSchedule
+            key={conflictEvent._id}
             conflictEvents={conflictEvent}
             accountIndex={index}
           />

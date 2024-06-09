@@ -1,6 +1,6 @@
 import React from "react";
 import { MemoryRouter } from "react-router-dom";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 
 import ScheduleDetails from "../components/Schedule/ScheduleDetails";
@@ -72,17 +72,27 @@ describe("ScheduleDetails Component with isNewEvent=true", () => {
       })
       .replaceAll(",", "");
 
-    const startDateInput = screen.getByPlaceholderText("StartDate");
-    const endDateInput = screen.getByPlaceholderText("EndDate");
+    const startDateInput = screen.getByPlaceholderText(
+      "StartDate",
+    ) as HTMLInputElement;
+    const endDateInput = screen.getByPlaceholderText(
+      "EndDate",
+    ) as HTMLInputElement;
 
     expect(startDateInput.value).toBe(formattedDate);
     expect(endDateInput.value).toBe(formattedDate);
   });
 
   it("should have empty input fields for title, attendees, and location", () => {
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-    const placeInput = screen.getByRole("textbox", { name: "place" });
-    const attendeeList = screen.queryByTestId("attendeeList");
+    const titleInput = screen.getByRole("textbox", {
+      name: "title",
+    }) as HTMLInputElement;
+    const placeInput = screen.getByRole("textbox", {
+      name: "place",
+    }) as HTMLInputElement;
+    const attendeeList = screen.queryByTestId(
+      "attendeeList",
+    ) as HTMLInputElement;
 
     expect(titleInput.value).toBe("");
     expect(placeInput.value).toBe("");
@@ -90,8 +100,12 @@ describe("ScheduleDetails Component with isNewEvent=true", () => {
   });
 
   it("should display 10:00 AM as starttime and 11:00 AM as endtime for a new event", async () => {
-    const startTime = screen.getByRole("textbox", { name: "startTime" });
-    const endTime = screen.getByRole("textbox", { name: "endTime" });
+    const startTime = screen.getByRole("textbox", {
+      name: "startTime",
+    }) as HTMLInputElement;
+    const endTime = screen.getByRole("textbox", {
+      name: "endTime",
+    }) as HTMLInputElement;
 
     expect(startTime.value).toBe("10:00 AM");
     expect(endTime.value).toBe("11:00 AM");
@@ -99,7 +113,9 @@ describe("ScheduleDetails Component with isNewEvent=true", () => {
 
   it("should display the user's default timezone for a new event", async () => {
     const mockTimezoneLabel = "(GMT+09:00) Korean Standard Time - Seoul";
-    const timezoneInput = screen.getByTestId("timezoneInput");
+    const timezoneInput = screen.getByTestId(
+      "timezoneInput",
+    ) as HTMLInputElement;
 
     expect(timezoneInput.value).toBe(mockTimezoneLabel);
   });
@@ -136,20 +152,28 @@ describe("ScheduleDetails Component with isNewEvent=false", () => {
       .format(eventInfo.endAt)
       .replaceAll(",", "");
 
-    const startDateInput = screen.getByPlaceholderText("StartDate");
-    const endDateInput = screen.getByPlaceholderText("EndDate");
+    const startDateInput = screen.getByPlaceholderText(
+      "StartDate",
+    ) as HTMLInputElement;
+    const endDateInput = screen.getByPlaceholderText(
+      "EndDate",
+    ) as HTMLInputElement;
 
     expect(startDateInput.value).toBe(formattedStartDate);
     expect(endDateInput.value).toBe(formattedEndDate);
   });
 
   it("should display the event's details in the title, place, and attendees input fields", () => {
-    const titleInput = screen.getByRole("textbox", { name: "title" });
-    const placeInput = screen.getByRole("textbox", { name: "place" });
+    const titleInput = screen.getByRole("textbox", {
+      name: "title",
+    }) as HTMLInputElement;
+    const placeInput = screen.getByRole("textbox", {
+      name: "place",
+    }) as HTMLInputElement;
 
     const attendeeList = screen.queryAllByTestId("attendeeList");
     const renderedAttendees = attendeeList.map((item) =>
-      item.textContent.trim(),
+      item.textContent?.trim(),
     );
 
     expect(titleInput.value).toBe(eventInfo.title);
@@ -160,8 +184,12 @@ describe("ScheduleDetails Component with isNewEvent=false", () => {
   });
 
   it("should display the event's start time and end time in time fields", async () => {
-    const startTime = screen.getByRole("textbox", { name: "startTime" });
-    const endTime = screen.getByRole("textbox", { name: "endTime" });
+    const startTime = screen.getByRole("textbox", {
+      name: "startTime",
+    }) as HTMLInputElement;
+    const endTime = screen.getByRole("textbox", {
+      name: "endTime",
+    }) as HTMLInputElement;
 
     const formatter = new Intl.DateTimeFormat("en-US", {
       hour: "2-digit",

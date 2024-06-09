@@ -5,7 +5,7 @@ import { render, screen } from "@testing-library/react";
 
 import RightSideBarItems from "../components/RightSideBar/RightSideBarItems";
 
-import { useNavbarStore } from "../store/TypeScript/navbar.ts";
+import { useNavbarStore } from "../store/navbar";
 
 const mockUserInfo = { email: "user@gmail.com", timezone: "Asia/Seoul" };
 const mockAccountInfo = [

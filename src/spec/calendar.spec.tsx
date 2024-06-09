@@ -4,7 +4,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 
 import CalendarBody from "../components/Calendar/CalendarBody";
-import { CALENDAR_DAYS, MINI_CALENDAR_DAYS } from "../constant/calendar.ts";
+import { CALENDAR_DAYS, MINI_CALENDAR_DAYS } from "../constant/calendar";
 
 const mockAccounts = [
   {
@@ -34,7 +34,8 @@ vi.mock("../store/account", () => ({
 }));
 
 vi.mock("../store/dates", async (importOriginal) => {
-  const actual = await importOriginal();
+  const actual = await import("../store/dates");
+
   return {
     ...actual,
     useCurrentMonthStore: () => ({ currentMonth: new Date(2024, 2, 1) }),
@@ -49,18 +50,26 @@ describe("CalendarBody", () => {
       </MemoryRouter>,
     );
 
-    const dayCounts = { S: 2, M: 1, T: 2, W: 1, F: 1, S: 2 };
+    const dayCounts: { [key in "S" | "M" | "T" | "W" | "F"]: number } = {
+      S: 2,
+      M: 1,
+      T: 2,
+      W: 1,
+      F: 1,
+    };
 
     MINI_CALENDAR_DAYS.forEach((day, index) => {
       const dayElements = screen.getAllByText(day);
-      expect(dayElements).toHaveLength(dayCounts[day]);
+      expect(dayElements).toHaveLength(
+        dayCounts[day as "S" | "M" | "T" | "W" | "F"],
+      );
     });
   });
 
   it("should render CALENDAR_DAYS for normal calendar", () => {
     render(
       <MemoryRouter>
-        <CalendarBody miniCalendar={false} />
+        <CalendarBody isMiniCalendar={false} />
       </MemoryRouter>,
     );
 
@@ -75,14 +84,19 @@ describe("CalendarBody", () => {
         <CalendarBody />
       </MemoryRouter>,
     );
-
     const eventDate = mockAccounts[0].events[0].startAt;
-    const testId = `date-${eventDate.getFullYear()}-${eventDate.getMonth()}-${eventDate.getDate() + 1}`;
-    const march30Container = screen.getByTestId(testId);
+    const testId = `date-${eventDate.getFullYear()}-${eventDate.getMonth() + 1}-${eventDate.getDate()}`;
+    console.log(`Test ID for single day event: ${testId}`);
+    const eventContainer = screen.getByTestId(testId);
+    console.log("Event container:", eventContainer);
 
-    expect(
-      within(march30Container).getByText("Test Event Single Day"),
-    ).toBeInTheDocument();
+    const eventElement = within(eventContainer).queryByText(
+      "Test Event Single Day",
+    );
+
+    console.log("Event element:", eventElement);
+
+    expect(eventElement).toBeInTheDocument();
   });
 
   it("should renders events correctly on their respective dates", () => {
@@ -94,13 +108,24 @@ describe("CalendarBody", () => {
 
     const eventStartDate = mockAccounts[0].events[1].startAt;
     const eventEndDate = mockAccounts[0].events[1].endAt;
-    const testIdForStart = `date-${eventStartDate.getFullYear()}-${eventStartDate.getMonth()}-${eventStartDate.getDate() + 1}`;
-    const testIdForEnd = `date-${eventEndDate.getFullYear()}-${eventEndDate.getMonth()}-${eventEndDate.getDate() + 1}`;
+
+    const testIdForStart = `date-${eventStartDate.getFullYear()}-${eventStartDate.getMonth() + 1}-${eventStartDate.getDate()}`;
+    const testIdForEnd = `date-${eventEndDate.getFullYear()}-${eventEndDate.getMonth() + 1}-${eventEndDate.getDate()}`;
+
     const startContainer = screen.getByTestId(testIdForStart);
     const endContainer = screen.getByTestId(testIdForEnd);
 
-    expect(
-      within(startContainer).getByText("Test Event Multi Day"),
-    ).toBeInTheDocument();
+    const startEventElement = within(startContainer).queryByText(
+      "Test Event Multi Day",
+    );
+    const endEventElement = within(endContainer).queryByText(
+      "Test Event Multi Day",
+    );
+
+    console.log(startEventElement);
+    console.log(endEventElement);
+
+    expect(startEventElement).toBeInTheDocument();
+    expect(endEventElement).toBeInTheDocument();
   });
 });
