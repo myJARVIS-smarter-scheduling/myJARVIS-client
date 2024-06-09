@@ -17,7 +17,7 @@ const vitestConfig = defineVitestConfig({
       reporter: ["text"],
       exclude: ["**/node_modules/**", "**/src/utils/microsoft/**"],
     },
-    setupFiles: ["src/setupTest.ts"],
+    setupFiles: ["src/setupTests.ts"],
   },
 });
 
