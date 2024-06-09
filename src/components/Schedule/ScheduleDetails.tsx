@@ -32,6 +32,7 @@ import { convertTimeWithTimezone } from "../../utils/convertDateFormat";
 
 import TIMEZONE_LIST from "../../constant/timezone";
 import { EventData } from "../../types/events";
+import { User } from "../../types/account";
 
 function ScheduleDetails({ isNewEvent = false }) {
   const navigate = useNavigate();
@@ -54,12 +55,16 @@ function ScheduleDetails({ isNewEvent = false }) {
   const formattedEventTimezone = TIMEZONE_LIST.find(
     (option) =>
       option.value === initialEventState.timezone ||
-      option.value === user?.timezone ||
-      option.alt === user?.timezone,
+      // option.value === user?.timezone ||
+      // option.alt === user?.timezone,
+      option.value === (user as User)?.timezone ||
+      option.alt === (user as User)?.timezone,
   );
   const formattedUserTimezone = TIMEZONE_LIST.find(
     (option) =>
-      option.value === user?.timezone || option.alt === user?.timezone,
+      // option.value === user?.timezone || option.alt === user?.timezone,
+      option.value === (user as User)?.timezone ||
+      option.alt === (user as User)?.timezone,
   );
   const hasEventTimezone =
     formattedEventTimezone?.value !== formattedUserTimezone?.value;
@@ -124,7 +129,8 @@ function ScheduleDetails({ isNewEvent = false }) {
   const [startDate, setStartDate] = useState(eventStartDate);
   const [endDate, setEndDate] = useState(eventEndDate);
   const [timezone, setTimezone] = useState(
-    formattedEventTimezone?.value || user?.timezone || "",
+    // formattedEventTimezone?.value || user?.timezone || "",
+    formattedEventTimezone?.value || (user as User)?.timezone || "",
   );
   const [startTime, setStartTime] = useState(eventStartTime);
   const [endTime, setEndTime] = useState(eventEndTime);
@@ -340,13 +346,17 @@ function ScheduleDetails({ isNewEvent = false }) {
                       <div className="min-w-210 text-15">
                         <DropdownMenu
                           options={accountList}
-                          placeholder={user?.email}
+                          // placeholder={user?.email}
+                          placeholder={(user as User)?.email}
                           handleOptionChange={setAccountId}
                         />
                       </div>
                     ) : (
                       <p>
-                        {isNewEvent ? user?.email : initialEventState.email}
+                        {/* {isNewEvent ? user?.email : initialEventState.email} */}
+                        {isNewEvent
+                          ? (user as User)?.email
+                          : initialEventState.email}
                       </p>
                     )}
                   </div>
