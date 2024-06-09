@@ -6,7 +6,7 @@ import { User, Account, AccountInfo } from "../types/account";
 
 interface LoginProviderState {
   provider: string;
-  user: User | null;
+  user: User | string;
   accountInfo: AccountInfo[];
   setProvider: (provider: string) => void;
   setUser: (user: User) => void;
@@ -32,7 +32,7 @@ const useLoginProviderStore = create<LoginProviderState>()(
     persist(
       (set) => ({
         provider: "",
-        user: null,
+        user: "",
         accountInfo: [],
         setProvider: (provider) => set({ provider }),
         setUser: (user) => set({ user }),

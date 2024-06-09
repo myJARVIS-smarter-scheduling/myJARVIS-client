@@ -126,6 +126,11 @@ export interface MicrosoftEvent {
   "calendar@odata.navigationLink": string;
 }
 
+export interface MicrosoftEventResponse {
+  "@odata.context": string;
+  value: MicrosoftEvent[];
+}
+
 export interface AccountData {
   userInfo: UserInfo;
   mailboxSettings: MailboxSettings;
